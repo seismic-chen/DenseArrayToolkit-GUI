@@ -1,0 +1,114 @@
+FMI installation
+
+1. Upzip the package
+First you should decide where (which directory) FMI will be installed. Two
+package files are provided, FMI_v0.9.zip for Windows systems and FMI_v0.9.tar.gz
+for all Unix like systems. No compiling is required. Note that there is already
+a top level directory called FMI that includes everything. We will refer the
+directory including FMI as FMIHOME. For example, if you unzip the files into
+/home on a linux system, the FMIHOME will be "/home/FMI".
+
+If you need high resolution coast-line map files, which are not included in FMI
+package files, you need download the zip file (gshhs.tar.gz or gshhs.zip) and
+extract map files into FMIHOME/m_map/private/
+
+
+2. Path Settings
+Add following paths into MATLAB paths (replace FMIHOME with the real FMI
+directory)
+    FMIHOME
+    FMIHOME/FMItools
+    FMIHOME/FMIdemos
+    FMIHOME/apps
+    FMIHOME/m_map
+    FMIHOME/matTaup
+
+There are several ways to add MATLAB paths
+1) If you are using MATLAB desktop, you can click "Set Path" in "File" meanu.
+Then add those above directories. If you don't have privilege to overwrite
+system default pathdef.m of if you are using a multiple-user system, save
+pathdef.m into ~/matlab/ or the directory where you start MATLAB.
+
+2) You can add paths manually. Use which command in MATLAB to find pathdef.m.
+Then add above directories into pathdef.m and save it into ~/matlab/ or the
+directory where you start MATLAB.
+
+3) Add those paths in .cshrc by defining a environment variable MATLABPATH, if
+you are using Unix like system and runing csh/tcsh.
+
+4) Add those paths in startup.m by using "path" or "addpath" function. Save
+startup.m into ~/matlab/ or the directory where you start MATLAB.
+
+% Add FMI paths. Remeber to replace FMIHOME with the reall FMI home directory
+FMIHOME = '/home/FMI';
+
+if FMIHOME(end)=='/' | FMIHOME(end)=='\'
+    FMIHOME(end) = [];
+end;
+addpath(FMIHOME);
+addpath([FMIHOME '/FMItools']);
+addpath([FMIHOME '/FMIdemos']);
+addpath([FMIHOME '/apps']);
+addpath([FMIHOME '/m_map']);
+addpath([FMIHOME '/matTaup']);
+
+% end of adding path
+
+
+3. Add FMI.jar into class paths of the Java virtual machine.
+1) Find classpath.txt using which command in MATLAB.
+
+2) Open classpath.txt and append following lines. Remember to replace FMIHOME
+with the real FMI home directory.
+    FMIHOME/lib/FMI.jar
+
+3) If you are the only user on your computer, you may overwrite the orignial
+file. Otherwise we recommend saving the modified classpath.txt into the
+directory where you start MATLAB.
+
+
+4. Run "FMI_systemcheck" to check if the MATLAB paths and Java class paths have
+been set properly. If you see "FMI OK!", then you have installed FMI
+successfully!.
+
+
+5. Some issures for starting MATLAB
+
+1. Sometimes MATLAB desktop does not work properly, or it may be very slow if
+you are running MATLAB remotely through X-window. Use "matlab -nodesktop
+-nosplash" instead to start MATLAB.
+
+2. If you are using your personal classpath.txt, you MUST start MATLAB from the
+directory that contains this file. Otherwise FMI will not run properly. This is
+straightforward for all Unix like sytems, but may be tricky for Windows and Mac
+OS X systems. Followings are some suggestions.
+
+1). On Windows system, double click on MATLAB icon will make MATLAB starting
+from default directory, e.g., $MATLABHOME/work. Unless your classpath.txt is in
+that directory, double click on MATLAB icon will not work. There are two ways to
+get around this problem. The first ways is to add MATLAB executable directory
+($MATLABHOME/bin/win32) into Windows search path; then open a command window and
+enter the directory where classpath.txt is located; then start matlab by typing
+"matlab". Or you can make a copy of MATLAB shortcut (right click on MATLAB icon
+and select "copy"; paste it onto your destop and rename it as what you want);
+then right click on the copy of the MATLAB shortcut, and select "properties"; in
+"shortcut" tab, enter your MATLAB start directory into "start in:" field; click
+ok and you can start MATLAB.
+
+2). On Mac OS X, your must first start an X-window server:
+In OS X 10.2 with OroborOSX (X-windows supplied by matlab), I do this by
+launching matlab from the finder, then quitting matlab. If you have loaded X11
+from OS X (10.2 or 10.3) start X11 using: /Applications/Utilities/X11. Then open
+an X window. Move into the directory that contains the classpath.txt file.
+Execute matlab (for example one of these may work):
+/Applications/MATLAB6p5/bin/matlab -nodesktop
+/Applications/MATLAB6p5p1/bin/matlab
+(Using MATLAB6p5 and OroborOSX you must run matlab with the -nodesktop option
+In MATLAB6p5p1 on OSX 10.3 you can use the desktop if you like.)
+
+Note: I have not been able to run FMI when launching MATLAB from the finder
+because it does not know where to look for the classpath.txt file.
+
+
+After starting matlab, run the application you want: SeisFinder or EventFinder
+or one of the demos.

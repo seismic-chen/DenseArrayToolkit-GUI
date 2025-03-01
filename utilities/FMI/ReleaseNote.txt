@@ -1,0 +1,18 @@
+Version 0.9  12/20/2003
+
+The first release of FMI
+
+
+Verion 0.91  04/15/2004
+
+1. Users are able to split a big seismogram retrieving job into small parts to avoid memory overflow. An iterator is implemented to handle multiple retrieving.
+
+2. The POND server have been changed. Users no long have choices to retrieve FARM or SPYDER data if both are available. Only FARM data will be returned. The server will return SPYDER data only if FARM data is unavailable. 
+
+3. A bug is fixed for EventFinder, where if a 1-digit month or day value is input, it will not be recognized correctly.
+
+4. The Java class files required by FMI are packed into a single archive file for easy setup and management.
+
+5. Initialization for classes MatEvent, MatNetwork, and MatSeismogram are changed. No need to open ORB first and no more "orb" input parameter for the initialization functions. The corresponding orb functions, open_orb and close_orb, have been removed. 
+
+6. The MatNetwork class is still under development and untested and it may not work properly.

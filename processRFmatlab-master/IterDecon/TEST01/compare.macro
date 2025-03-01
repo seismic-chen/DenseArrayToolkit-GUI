@@ -1,0 +1,13 @@
+echo on
+r FDomain/lac.aftn
+int
+setbb area &1,depmax
+*
+r lac.i.eqr ./FDomain/lac.eqr
+div 1.42 1
+xlim -5 20
+color on inc on list r b
+p2
+echo off
+xlim off
+color off

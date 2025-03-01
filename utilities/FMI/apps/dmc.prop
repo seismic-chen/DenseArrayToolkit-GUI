@@ -1,0 +1,13 @@
+# Use the Orbacus ORB:
+org.omg.CORBA.ORBClass = com.ooc.CORBA.ORB
+org.omg.CORBA.ORBSingletonClass = com.ooc.CORBA.ORBSingleton
+
+# Get the name service:
+# The format for a corbaloc for a naming service is
+#    corbaloc:iiop:host.domain:port/NameService
+#ooc.orb.service.NameService=corbaloc:iiop:piglet.seis.sc.edu:7771/NameService
+#ooc.orb.service.NameService=corbaloc:iiop:scepp.seis.sc.edu:6371/NameService
+ooc.orb.service.NameService = corbaloc:iiop:dmc.iris.washington.edu:6371/NameService
+
+# Set location of Network DataCenter to use:
+fissures.networkDCname = edu/iris/dmc/IRIS_NetworkDC

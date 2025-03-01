@@ -1,0 +1,648 @@
+Putting bad receiver functions in prfns/prfns_iter_2.50/rejected/
+Number of station directories: 2
+DIR # = 1
+Number of PRF files: 2
+Number of TRF files: 0
+File # = 1
+	Deconvolution RMS = 0.131789
+	Max abs peak at t=0.200
+	Max amplitude = 0.424496
+	Size of the second largest spike: 0.196070
+Keep with L click. Reject with R click...
+keeping
+File # = 2
+	Deconvolution RMS = 0.539293
+	Larger than defined threshold, indicating deconvolution didnt work
+	Max abs peak at t=89.900
+	Greater than threshold indicating no strong p-wave signal
+Note this logic only works for R/Z receiver functions
+	Max amplitude = 0.363523
+	Size of the second largest spike: 0.363523
+	2nd largest spike > 0.500000 x max spike indicating another phase or noise is contaminating the signal
+Keep with L click. Reject with R click...
+keeping
+DIR # = 2
+Number of PRF files: 2
+Number of TRF files: 0
+File # = 1
+	Deconvolution RMS = 0.135229
+	Max abs peak at t=0.000
+	Max amplitude = 0.623609
+	Size of the second largest spike: 0.186766
+Keep with L click. Reject with R click...
+keeping
+File # = 2
+	Deconvolution RMS = 0.236552
+	Max abs peak at t=-0.100
+	Max amplitude = 0.460347
+	Size of the second largest spike: 0.396384
+	2nd largest spike > 0.500000 x max spike indicating another phase or noise is contaminating the signal
+Keep with L click. Reject with R click...
+keeping
+who
+
+Your variables are:
+
+ans           log           tmp_userpath  
+
+log
+
+log = 
+
+1x9326 struct array with fields:
+    year
+    month
+    day
+    H
+    m
+    s
+    fsec
+    jday
+    elat
+    elon
+    edep
+    sta
+    slat
+    slon
+    sdep
+    z
+    n
+    e
+    ptime
+    dist
+    rayp
+    az
+    baz
+    snr
+    T
+    R
+    Z
+    t
+
+
+script01a_processPrfns  script01b_processSrfns  
+
+script01a_processPrfns  script01b_processSrfns  
+script01a_processPrfns
+    name1: 'example_data/seismograms/events/2008_09_01_07_06_16/TA.Z16A.BHE'
+    name2: 'example_data/seismograms/events/2008_09_01_07_06_16/TA.Z16A.BHN'
+    name3: 'example_data/seismograms/events/2008_09_01_07_06_16/TA.Z16A.BHZ'
+
+    name1: 'example_data/seismograms/events/2008_09_01_07_06_16/TA.Q20A.BHE'
+    name2: 'example_data/seismograms/events/2008_09_01_07_06_16/TA.Q20A.BHN'
+    name3: 'example_data/seismograms/events/2008_09_01_07_06_16/TA.Q20A.BHZ'
+
+    name1: 'example_data/seismograms/events/2008_08_19_16_30_13/TA.Z16A.BHE'
+    name2: 'example_data/seismograms/events/2008_08_19_16_30_13/TA.Z16A.BHN'
+    name3: 'example_data/seismograms/events/2008_08_19_16_30_13/TA.Z16A.BHZ'
+
+    name1: 'example_data/seismograms/events/2008_08_19_16_30_13/TA.Q20A.BHE'
+    name2: 'example_data/seismograms/events/2008_08_19_16_30_13/TA.Q20A.BHN'
+    name3: 'example_data/seismograms/events/2008_08_19_16_30_13/TA.Q20A.BHZ'
+
+Number of station-receiver pairs: 4
+
+example_data/seismograms/events/2008_08_19_16_30_13/TA.Q20A.BHZ
+Press a key to continue 
+		Adjust time: 705.898254 -- 915.898254
+Press a key to continue 
+		Remove DC
+Press a key to continue 
+		Taper with 5.0 percent
+Press a key to continue 
+		Bandpass from 0.02 to 2.00 Hz
+Press a key to continue 
+		Remove DC
+		Taper with 5.0 percent
+		Resampling from 0.025 to 0.100 s
+Press a key to continue 
+		Rotating to TRZ
+Making Rfn water level...
+Written to prfns/prfns_water_2.50/TA_Q20A/2008_232_1630_TA_Q20A.PRF.sac
+Making Rfn iterative...
+Written to prfns/prfns_iter_2.50/TA_Q20A/2008_232_1630_TA_Q20A.PRF.sac
+Press a key to continue
+
+example_data/seismograms/events/2008_08_19_16_30_13/TA.Z16A.BHZ
+Press a key to continue 
+		Adjust time: 679.088501 -- 889.088501
+Press a key to continue 
+		Remove DC
+Press a key to continue 
+		Taper with 5.0 percent
+Press a key to continue 
+		Bandpass from 0.02 to 2.00 Hz
+Press a key to continue 
+		Remove DC
+		Taper with 5.0 percent
+		Resampling from 0.025 to 0.100 s
+Press a key to continue 
+		Rotating to TRZ
+Making Rfn water level...
+Written to prfns/prfns_water_2.50/TA_Z16A/2008_232_1630_TA_Z16A.PRF.sac
+Making Rfn iterative...
+Written to prfns/prfns_iter_2.50/TA_Z16A/2008_232_1630_TA_Z16A.PRF.sac
+Press a key to continue
+
+example_data/seismograms/events/2008_09_01_07_06_16/TA.Q20A.BHZ
+Press a key to continue 
+		Adjust time: 716.927429 -- 926.927429
+Press a key to continue 
+		Remove DC
+Press a key to continue 
+		Taper with 5.0 percent
+Press a key to continue 
+		Bandpass from 0.02 to 2.00 Hz
+Press a key to continue 
+		Remove DC
+		Taper with 5.0 percent
+		Resampling from 0.025 to 0.100 s
+Press a key to continue 
+		Rotating to TRZ
+Making Rfn water level...
+Written to prfns/prfns_water_2.50/TA_Q20A/2008_245_0706_TA_Q20A.PRF.sac
+Making Rfn iterative...
+Written to prfns/prfns_iter_2.50/TA_Q20A/2008_245_0706_TA_Q20A.PRF.sac
+Press a key to continue
+
+example_data/seismograms/events/2008_09_01_07_06_16/TA.Z16A.BHZ
+Press a key to continue 
+		Adjust time: 691.575256 -- 901.575256
+Press a key to continue 
+		Remove DC
+Press a key to continue 
+		Taper with 5.0 percent
+Press a key to continue 
+		Bandpass from 0.02 to 2.00 Hz
+Press a key to continue 
+		Remove DC
+		Taper with 5.0 percent
+		Resampling from 0.025 to 0.100 s
+Press a key to continue 
+		Rotating to TRZ
+Making Rfn water level...
+Written to prfns/prfns_water_2.50/TA_Z16A/2008_245_0706_TA_Z16A.PRF.sac
+Making Rfn iterative...
+Written to prfns/prfns_iter_2.50/TA_Z16A/2008_245_0706_TA_Z16A.PRF.sac
+Press a key to continue
+
+
+
+script                           script03a_plotGatherTimeStacks   
+script01a_processPrfns           script03b_plotGatherDepthStacks  
+script01b_processSrfns           
+script02_checkPrfns              
+script01b_processSrfns
+
+opt = 
+
+       MINZ: 1
+       MAXZ: 600
+     DELMIN: 55
+     DELMAX: 95
+    PHASENM: 'S'
+    TBEFORE: 120
+     TAFTER: 120
+     TAPERW: 0.0500
+        FLP: 1
+        FHP: 0.0200
+     FORDER: 3
+      DTOUT: 0.1000
+     MAGMIN: 5.5000
+
+
+opt = 
+
+       MINZ: 1
+       MAXZ: 600
+     DELMIN: 55
+     DELMAX: 95
+    PHASENM: 'S'
+    TBEFORE: 120
+     TAFTER: 120
+     TAPERW: 0.0500
+        FLP: 1
+        FHP: 0.0200
+     FORDER: 3
+      DTOUT: 0.1000
+     MAGMIN: 5.5000
+     MAGMAX: 8
+
+    name1: 'example_data/seismograms/events/2008_09_01_07_06_16/TA.Z16A.BHE'
+    name2: 'example_data/seismograms/events/2008_09_01_07_06_16/TA.Z16A.BHN'
+    name3: 'example_data/seismograms/events/2008_09_01_07_06_16/TA.Z16A.BHZ'
+
+    name1: 'example_data/seismograms/events/2008_09_01_07_06_16/TA.Q20A.BHE'
+    name2: 'example_data/seismograms/events/2008_09_01_07_06_16/TA.Q20A.BHN'
+    name3: 'example_data/seismograms/events/2008_09_01_07_06_16/TA.Q20A.BHZ'
+
+    name1: 'example_data/seismograms/events/2008_08_19_16_30_13/TA.Z16A.BHE'
+    name2: 'example_data/seismograms/events/2008_08_19_16_30_13/TA.Z16A.BHN'
+    name3: 'example_data/seismograms/events/2008_08_19_16_30_13/TA.Z16A.BHZ'
+
+    name1: 'example_data/seismograms/events/2008_08_19_16_30_13/TA.Q20A.BHE'
+    name2: 'example_data/seismograms/events/2008_08_19_16_30_13/TA.Q20A.BHN'
+    name3: 'example_data/seismograms/events/2008_08_19_16_30_13/TA.Q20A.BHZ'
+
+Number of station-receiver pairs: 4
+
+example_data/seismograms/events/2008_08_19_16_30_13/TA.Q20A.BHZ
+Press a key to continue 
+		Adjust time: 1225.275513 -- 1465.275513
+Press a key to continue 
+		Remove DC
+Press a key to continue 
+		Taper with 5.0 percent
+Press a key to continue 
+		Bandpass from 0.02 to 1.00 Hz
+Press a key to continue 
+		Remove DC
+		Taper with 5.0 percent
+		Resampling from 0.025 to 0.100 s
+Press a key to continue 
+		Rotating to TRZ
+Making Rfn water level...
+Written to srfns/srfns_water_1.00/TA_Q20A/2008_232_1630_TA_Q20A.SRF.sac
+Making Rfn iterative...
+Written to srfns/srfns_iter_1.00/TA_Q20A/2008_232_1630_TA_Q20A.SRF.sac
+Press a key to continue
+
+example_data/seismograms/events/2008_08_19_16_30_13/TA.Z16A.BHZ
+Press a key to continue 
+		Adjust time: 1173.423218 -- 1413.423218
+Press a key to continue 
+		Remove DC
+Press a key to continue 
+		Taper with 5.0 percent
+Press a key to continue 
+		Bandpass from 0.02 to 1.00 Hz
+Press a key to continue 
+		Remove DC
+		Taper with 5.0 percent
+		Resampling from 0.025 to 0.100 s
+Press a key to continue 
+		Rotating to TRZ
+Making Rfn water level...
+Written to srfns/srfns_water_1.00/TA_Z16A/2008_232_1630_TA_Z16A.SRF.sac
+Making Rfn iterative...
+Written to srfns/srfns_iter_1.00/TA_Z16A/2008_232_1630_TA_Z16A.SRF.sac
+Press a key to continue
+
+example_data/seismograms/events/2008_09_01_07_06_16/TA.Q20A.BHZ
+WARNING: time of S arrival not defined
+	... Labels defined are
+		P       
+		SKS     
+		-12345  
+		-12345  
+		-12345  
+		-12345  
+		-12345  
+		-12345  
+		-12345  
+		-12345  
+Time of S arrival not found in header. 
+...Skipping
+
+example_data/seismograms/events/2008_09_01_07_06_16/TA.Z16A.BHZ
+Press a key to continue 
+		Adjust time: 1197.533081 -- 1437.533081
+Press a key to continue 
+		Remove DC
+Press a key to continue 
+		Taper with 5.0 percent
+Press a key to continue 
+		Bandpass from 0.02 to 1.00 Hz
+Press a key to continue 
+		Remove DC
+		Taper with 5.0 percent
+		Resampling from 0.025 to 0.100 s
+Press a key to continue 
+		Rotating to TRZ
+Making Rfn water level...
+Written to srfns/srfns_water_1.00/TA_Z16A/2008_245_0706_TA_Z16A.SRF.sac
+Making Rfn iterative...
+Written to srfns/srfns_iter_1.00/TA_Z16A/2008_245_0706_TA_Z16A.SRF.sac
+Press a key to continue
+
+
+
+
+script03a_plotGatherTimeStacks
+Number of Rfns: 4
+Number of Stations: 2
+
+Q20A:
+Number Rfns: 2
+
+Z16A:
+Number Rfns: 2
+
+script03b_plotGatherDepthStacks
+Number of Rfns: 4
+Number of Stations: 2
+
+Q20A:
+Number Rfns: 2
+click on rfn moho depths
+RFn 1 moho coords (km): x = -7.28 y=-3.79 z=44.59
+
+Z16A:
+Number Rfns: 2
+click on rfn moho depths
+RFn 1 moho coords (km): x = -5.13 y=-2.67 z=33.19
+RFn 2 moho coords (km): x = -4.83 y=-2.52 z=28.51
+
+ls
+example_data	    script01a_processPrfns.m  script03a_plotGatherTimeStacks.m
+prfns		    script01b_processSrfns.m  script03b_plotGatherDepthStacks.m
+run_all_examples.m  script02_checkPrfns.m     srfns
+
+cd ~
+cd new_rfun
+ls
+apply_cor		      Luyi_paper.pdf
+apply_mtzcor		      mcodes
+bin			      mtz_radon
+comp_to_jeff		      mtz_ssa
+crust1.bnds		      paper_draft_latex_linux
+crust1.rho		      paper_draft_latex_mac
+crust1.vp		      Paper_reading_notes.odt
+crust1.vs		      paper_references
+crustcorr		      partial_stack_sacs
+dbase			      perturb_analysis
+depth_conv		      plot_commonfeature.pdf
+depth_xplot		      plot_gathers
+draft.odt		      radon_error
+EDM_two_freq_comparision.fig  ramin_result
+EDM_two_freq_comparision.jpg  request
+EDM_two_freq_comparision.png  revision
+evaluate_LVZ		      revision_sharp_MTZ
+evaluate_LVZ_low_freq	      RPB_stacking
+figures			      RPB_stackinggradient_model
+figures_final		      run_CA
+for_funclab		      saclab
+funclab1.5.4		      sean_bin
+gathers			      sean_codes.docx
+get_stadata.m		      slant
+GMT_example		      somestackswithdistance
+heterogeneity_correction      somestackswithdistance.zip
+HK			      splitcontours.m
+hk_cor			      stacked_trace
+HON_Aug30		      stastack
+images			      temp_get_folds.m
+inversion		      try_contour.m
+jeff_data		      vpvs_poisson_conv.m
+jeff_great_circle_code	      vpvs_to_poisson.m
+linear_inv		      work
+
+cd dbaes
+{Error using cd
+Cannot CD to dbaes (Name is nonexistent or not a directory).
+} 
+ls
+apply_cor		      Luyi_paper.pdf
+apply_mtzcor		      mcodes
+bin			      mtz_radon
+comp_to_jeff		      mtz_ssa
+crust1.bnds		      paper_draft_latex_linux
+crust1.rho		      paper_draft_latex_mac
+crust1.vp		      Paper_reading_notes.odt
+crust1.vs		      paper_references
+crustcorr		      partial_stack_sacs
+dbase			      perturb_analysis
+depth_conv		      plot_commonfeature.pdf
+depth_xplot		      plot_gathers
+draft.odt		      radon_error
+EDM_two_freq_comparision.fig  ramin_result
+EDM_two_freq_comparision.jpg  request
+EDM_two_freq_comparision.png  revision
+evaluate_LVZ		      revision_sharp_MTZ
+evaluate_LVZ_low_freq	      RPB_stacking
+figures			      RPB_stackinggradient_model
+figures_final		      run_CA
+for_funclab		      saclab
+funclab1.5.4		      sean_bin
+gathers			      sean_codes.docx
+get_stadata.m		      slant
+GMT_example		      somestackswithdistance
+heterogeneity_correction      somestackswithdistance.zip
+HK			      splitcontours.m
+hk_cor			      stacked_trace
+HON_Aug30		      stastack
+images			      temp_get_folds.m
+inversion		      try_contour.m
+jeff_data		      vpvs_poisson_conv.m
+jeff_great_circle_code	      vpvs_to_poisson.m
+linear_inv		      work
+
+cd dbase
+ls
+CN			  number_of_events.txt	tempe
+cn_unproc_log.mat	  prep_data		tempn
+cn_unproc_log_YFtest.mat  prep_data_0.3_5.0Hz	tempr
+CR			  prep_data_3.5Hz	tempt
+CR_new			  prep_data_3.5Hz_new	tempz
+cr_unproc_log.mat	  prep_data_5Hz		test
+cr_unproc_log_YFtest.mat  prep_data_5Hz_final	test_CA_macro
+instrument_response	  prep_sacs.m		XN
+link_antelope_summary.m   processRF
+link_cnsn_summary.m	  rem_instu_resp.m
+
+cd CR_new
+ls
+change_headers.m	    observed		seq_hk.m
+compare_preprocessing_code  output.txt		tempe
+compare_RF.m		    parse_idecon_log.m	tempn
+cr_unproc_log.mat	    plot_all_xn.m	tempr
+decon			    predicted		tempt
+denominator		    prep_data		tempz
+idecon			    prep_sacs.m		test
+import_data.m		    processed_log.mat	timecorr_search_best.m
+link_cr_summary.m	    run_decon.m		timecorr_wl.m
+link_xn_summary.m	    run_decon_new.m
+numerator		    run_idecon.m
+
+!vim run_decon
+[?1049h[?1h=[1;24r[?12;25h[?12l[?25h[27m[m[H[2J[?25l[24;1H"run_decon" [New File][>c[2;1H[94m~                                                                               [3;1H~                                                                               [4;1H~                                                                               [5;1H~                                                                               [6;1H~                                                                               [7;1H~                                                                               [8;1H~                                                                               [9;1H~                                                                               [10;1H~                                                                               [11;1H~                                                                               [12;1H~                                                                               [13;1H~                                                                               [14;1H~                                                                               [15;1H~                                                                               [16;1H~                                                                               [17;1H~                                                                               [18;1H~                                                                               [19;1H~                                                                               [20;1H~                                                                               [21;1H~                                                                               [22;1H~                                                                               [23;1H~                                                                               [m[24;63H0,0-1[9CAll[1;1H[?12l[?25h[?25l[24;1H[K[24;1H:[?12l[?25hq[?25l[?12l[?25h[?25l[24;1H[K[24;1H[?1l>[?12l[?25h[?1049l!vim run_decon.m
+
+[?1049h[?1h=[1;24r[?12;25h[?12l[?25h[27m[m[H[2J[?25l[24;1H"run_decon.m" 113L, 4707C[>c[1;1H[34m% The code excutes the decon process by using the matlab logrountine rather
+% than ammon's fortran code, which would increase the processing speed.
+% Also, different gaussian parameter and water level values will be tested
+% in order to get a proper decon result.
+% I also combine the decon step with the partial stacking step and write
+% out the clean log dataset used in the partial stacking.
+% Yunfeng Chen, 2013. Modified from Sean's code.
+% Jul 17, 2013, (1) To evaluate the processing noise, I shift the signal
+% for 30 seconds compared with the previous 5 sec option. When I am
+% calculating the SNR, the shorter window length, 6 sec, for P was used.
+% The way of evaluating the quality of decon has also been modified.
+% (2), Add time domain iterative decon method
+% Apr 19, 2015, use the original waterlevel deconvolution code with a fixed
+% waterlevel value, search_best logroutine probably is not a good ideal[m
+[38;5;130mclear[m[35m;[mclc[35m;[m
+tic[35m;[m
+[34m% add decon code path[m
+processRFmatlab_startup
+addpath([31m'/home/yunfeng/new_rfun/bin'[m)[35m;[m
+addpath([31m'/home/yunfeng/matlab/MatSAC'[m)[35m;[m
+addpath([31m'/home/yunfeng/matlab/FMI/matTaup'[m)[35m;[m
+javaaddpath([31m'/home/yunfeng/matlab/FMI/lib/FMI.jar'[m)[35m;[m[24;63H1,1[11CTop[1;1H[?12l[?25h[?25l[27m[m[H[2J[1;1H[34m%     keep = find([log.wlrms]< 0.2);
+%     log = log(keep);
+%     ND = length(log);
+%     gone = [];
+%     for n = 1:ND
+%         % Test code - eliminate traces with negative P-pulse
+%         % the time range is determined on the time interval of the data,
+%         % for dt = 0.2, time range is from 15 to 40, for dt = 0.1, time
+%         % range have to be doubled
+%         begining = round(ph/dt-2/dt);
+%         ending = round(ph/dt+3/dt);
+%         [amp, ind] = max(abs(log(n).wlr(begining:ending)));
+%         if log(n).wlr(begining+ind-1) < 0 || amp > 1
+%             gone = [gone, n];
+%         end
+%     end
+%     %%% eliminate negative traces
+%     log(gone) = [];[m
+    [34m% save the results[m
+    dataname = [36m[[moutdir,[31m'decon_gauss'[m,num2str(gauss(m)),[31m'.mat'[m[36m][m[35m;[m
+    save(dataname,[31m'log'[m)[35m;[m
+[38;5;130mend[m
+toc[35m;[m[24;63H113,1[9CBot[23;1H[?12l[?25h[?25l[24;63H[K[24;1H/[?12l[?25hd[?25l[?12l[?25ha[?25l[?12l[?25ht[?25l[?12l[?25ha[?25l[?12l[?25hn[?25l[?12l[?25ha[?25l[?12l[?25hm[?25l[?12l[?25he[?25l[?12l[?25h[?25l[31msearch hit BOTTOM, continuing at TOP[m[20;5H[103mdataname[21;10Hdataname[m[24;63H110,5[9CBot[24;63H[K[24;63H110,5[9CBot[20;5H[?12l[?25h[?25l[24;1H[K[24;1H/[?12l[?25ho[?25l[?12l[?25hu[?25l[?12l[?25ht[?25l[?12l[?25hd[?25l[?12l[?25hi[?25l[?12l[?25hr[?25l[?12l[?25h[?25l[20;5Hdataname[4C[103moutdir[m[21;10Hdataname[24;63H110,17[8CBot[20;17H[?12l[?25h[?25l[27m[m[H[2J[1;1H[34m% The code excutes the decon process by using the matlab logrountine rather
+% than ammon's fortran code, which would increase the processing speed.
+% Also, different gaussian parameter and water level values will be tested
+% in order to get a proper decon result.
+% I also combine the decon step with the partial stacking step and write
+% out the clean log dataset used in the partial stacking.
+% Yunfeng Chen, 2013. Modified from Sean's code.
+% Jul 17, 2013, (1) To evaluate the processing noise, I shift the signal
+% for 30 seconds compared with the previous 5 sec option. When I am
+% calculating the SNR, the shorter window length, 6 sec, for P was used.
+% The way of evaluating the quality of decon has also been modified.
+% (2), Add time domain iterative decon method
+% Apr 19, 2015, use the original waterlevel deconvolution code with a fixed
+% waterlevel value, search_best logroutine probably is not a good ideal[m
+[38;5;130mclear[m[35m;[mclc[35m;[m
+tic[35m;[m
+[34m% add decon code path[m
+processRFmatlab_startup
+addpath([31m'/home/yunfeng/new_rfun/bin'[m)[35m;[m
+addpath([31m'/home/yunfeng/matlab/MatSAC'[m)[35m;[m
+addpath([31m'/home/yunfeng/matlab/FMI/matTaup'[m)[35m;[m
+javaaddpath([31m'/home/yunfeng/matlab/FMI/lib/FMI.jar'[m)[35m;[m[24;63H1,1[11CTop[1;1H[?12l[?25h[?25l[24;1H/outdir[24;63H[K[24;1H[27m[m[H[2J[1;1Hraw = [31m1[m[35m;[m
+waterlevel = [31m0.01[m[35m;[m
+
+[34m% calculate the receiver funciton by iterative deconvolution, the
+% dataset is the the same as the one calculated by waterlevel decon[m
+itmax = [31m400[m[35m;[m
+minderr = [31m0.001[m[35m;[m
+ph = [31m30[m[35m;[m [34m% phase delay[m
+VB = [31m0[m[35m;[m [34m% Allow verbose output[m
+
+data = [31m'/home/yunfeng/new_rfun/dbase/CR_new/prep_data/processed_log.mat'[m[35m;[m
+[103moutdir[m =  [31m'/home/yunfeng/new_rfun/dbase/CR_new/decon/'[m[35m;[m
+mkdir([103moutdir[m)[35m;[m
+
+[38;5;130mfor[m m = [31m2[m:[31m4[m
+    load(data)[35m;[m
+    nogood = [36m[][m[35m;[m
+    noresult = [36m[][m[35m;[m
+    [38;5;130mfor[m n = [31m1[m:length([38;5;130mlog[m)[20;8H [34m% Make sure we've got the components and desired signal noise ratio and  [21;1Hdata fit[m[22;8H [38;5;130mif[m exist([38;5;130mlog[m(n).R, [31m'file'[m) [38;5;130m&&[m exist([38;5;130mlog[m(n).Z, [31m'file'[m)[23;12H [34m% Check SNR[m[24;63H37,1[10C27%[12;1H[?12l[?25h[?25l[24;63H[K[24;1H:[?12l[?25hq[?25l[?12l[?25h[?25l[24;1H[K[24;1H[?1l>[?12l[?25h[?1049lcd decon/
+ls
+
+decon_gauss1.25.mat  decon_gauss2.5.mat  decon_gauss5.mat
+
+load decon_gauss5
+clear
+load decon_gauss5
+who
+
+Your variables are:
+
+log  
+
+log
+
+log = 
+
+1x9303 struct array with fields:
+    year
+    month
+    day
+    H
+    m
+    s
+    fsec
+    jday
+    elat
+    elon
+    edep
+    sta
+    slat
+    slon
+    sdep
+    z
+    n
+    e
+    ptime
+    dist
+    rayp
+    Z
+    R
+    T
+    N
+    E
+    az
+    baz
+    snr
+    wlr
+    wlrms
+    nwl
+    wltax
+    itr
+    itrms
+    ittax
+
+ls
+decon_gauss1.25.mat  decon_gauss2.5.mat  decon_gauss5.mat
+
+cd ..
+ls
+change_headers.m	    observed		seq_hk.m
+compare_preprocessing_code  output.txt		tempe
+compare_RF.m		    parse_idecon_log.m	tempn
+cr_unproc_log.mat	    plot_all_xn.m	tempr
+decon			    predicted		tempt
+denominator		    prep_data		tempz
+idecon			    prep_sacs.m		test
+import_data.m		    processed_log.mat	timecorr_search_best.m
+link_cr_summary.m	    run_decon.m		timecorr_wl.m
+link_xn_summary.m	    run_decon_new.m
+numerator		    run_idecon.m
+
+ls *m
+change_headers.m   link_xn_summary.m   run_decon.m	timecorr_search_best.m
+compare_RF.m	   parse_idecon_log.m  run_decon_new.m	timecorr_wl.m
+import_data.m	   plot_all_xn.m       run_idecon.m
+link_cr_summary.m  prep_sacs.m	       seq_hk.m
+
+help diary
+ DIARY Save text of MATLAB session.
+    DIARY FILENAME causes a copy of all subsequent command window input
+    and most of the resulting command window output to be appended to the
+    named file.  If no file is specified, the file 'diary' is used.
+ 
+    DIARY OFF suspends it. 
+    DIARY ON turns it back on.
+    DIARY, by itself, toggles the diary state.
+ 
+    Use the functional form of DIARY, such as DIARY('file'),
+    when the file name is stored in a string.
+ 
+    See also SAVE.
+
+    Reference page in Help browser
+       doc diary
+
+exit
