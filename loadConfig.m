@@ -65,7 +65,7 @@ config.max_angle_diff  = 15; % max azimuth difference (deg)
 config.profile_length  = 4;  % profile length (degree)
 
 %% 6. Global parameters
-config.dataFolder      = './data/event_waveforms_QBII'; % data folder path
+config.dataFolder      = './data/event_waveforms_BY'; % data folder path
 config.outputFolder    = './results';                 % output folder
 config.saveResults     = true;                        % whether to save results
 config.visualizeResults= true;                        % whether to visualize results
