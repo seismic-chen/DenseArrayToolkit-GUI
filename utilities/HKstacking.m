@@ -20,7 +20,7 @@ function [HKresults, plotData] = HKstacking(DataStruct, app, Hall)
     hkstat = struct();
     if_print_result = 1;
     if if_print_result == 1
-        fid1 = fopen('./HK_bootstrap_tmp.txt','a');
+        fid1 = fopen('./results/HK_bootstrap_tmp.txt','a');
         fprintf(fid1,'%-7s %-7s %-7s %-7s %-7s %-7s %-7s %-7s %-7s %-7s %-7s %-7s %-7s\n',...
             'Sta','Nrfs','Lat','Lon','Ele','H','Hstd','k','kstd','Hb_mean','Hb_std','kb_mean','kb_std');
     end

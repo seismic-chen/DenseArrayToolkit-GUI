@@ -1,0 +1,4 @@
+Sta	Lon	Lat	H (km)	Hstd (km)	k	kstd
+BY001	109.05	42.34	40.20	7.97	1.83	0.12
+Sta     Nrfs    Lat     Lon     Ele     H       Hstd    k       kstd    Hb_mean Hb_std  kb_mean kb_std 
+BY003   26      42.34   109.56  -12345.00 30.80   3.22    1.82    0.10    30.38   0.36    1.74    0.12   
