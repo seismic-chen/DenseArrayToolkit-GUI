@@ -42,10 +42,12 @@ classdef DenseArrayToolkit_GUI < matlab.apps.AppBase
     properties (Access = public)
         config           % 用于存放配置参数
         DataStruct       % 用于存放地震数据
+        ccpStruct       % 用于存放ccp结果
         configEditStatus  % 'OK','Cancel', 或其他状态
         preprocessingStatus = 'Cancel' % 'OK','Cancel', 或其他状态
         rankReductionStatus = 'Cancel'% 'OK','Cancel', 或其他状态
         hkStackingStatus = 'Cancel'; % 'OK','Cancel', 或其他状态
+        CCPStackingStatus % 'OK','Cancel', 或其他状态
     end
 
     properties (Access = private)
@@ -602,12 +604,11 @@ classdef DenseArrayToolkit_GUI < matlab.apps.AppBase
                 d.Value = 1;
                 d.Message = '接收函数计算完成！';
                 drawnow;
-        
+
+
                 pause(0.5);  % 给用户一点时间看进度到100%
                 close(d);
 
-                
-                close(d);
                 uialert(app.UIFigure, '接收函数计算完成！', '提示');
             catch ME
                 if exist('d','var') && isvalid(d)
@@ -1038,6 +1039,7 @@ classdef DenseArrayToolkit_GUI < matlab.apps.AppBase
            
         end
 
+
         % Menu selected function: HkStackingMenu
         function HkStackingMenuSelected(app, event)
             try
@@ -1081,6 +1083,38 @@ classdef DenseArrayToolkit_GUI < matlab.apps.AppBase
             catch ME
                 uialert(app.UIFigure, ...
                     ['打开HK Stacking参数设置时出现错误: ', ME.message], ...
+                    '错误','Icon','error');
+            end
+
+        % Menu selected function: CCPMenu
+        function CCPMenuSelected(app, event)
+             % 当用户点击 imaging->CCP 菜单时执行
+            try
+
+                % 创建并打开子App
+                ccpApp = CCPStackingApp();
+                ccpApp.mainApp = app;
+                ccpApp.DataStruct = app.DataStruct;
+                % ccpApp.loadConfigData(defaultParam);
+                % 让子App知道 mainApp 的引用 -> rankApp.mainApp = app;
+
+                % 如果要阻塞主App，可:
+                waitfor(ccpApp.UIFigure);
+
+                switch app.CCPStackingStatus
+                    case 'OK'
+                        uialert(app.UIFigure,'CCP stacking 处理完成！','提示');
+                        app.statusLabel.Text = 'CCP stacking 处理完成';
+                    case 'Cancel'
+                        uialert(app.UIFigure,'CCP stacking 取消!','提示');
+                        app.statusLabel.Text = 'CCP stacking 取消';
+                    otherwise
+                        uialert(app.UIFigure,'Known operation...','提示');
+                end        
+
+            catch ME
+                uialert(app.UIFigure, ...
+                    ['打开CommonConversionPoint参数设置时出现错误: ',ME.message], ...
                     '错误','Icon','error');
             end
         end
@@ -1136,6 +1170,7 @@ classdef DenseArrayToolkit_GUI < matlab.apps.AppBase
 
             % Create CCPMenu
             app.CCPMenu = uimenu(app.ImagingMenu);
+            app.CCPMenu.MenuSelectedFcn = createCallbackFcn(app, @CCPMenuSelected, true);
             app.CCPMenu.Text = 'CCP';
 
             % Create Migration2DMenu
