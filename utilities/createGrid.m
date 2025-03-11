@@ -11,18 +11,20 @@ originLon=min(stlo);
 originLat=min(stla);
 % 将经纬度转换为笛卡尔坐标（相对最小经纬度）
 [stationX, stationY] = latlon2xy(stlo, stla, originLon, originLat);
-% stationX = stationX-mean(stationX);
-% stationY = stationY-mean(stationY);
 
-% % 计算所有相邻台站之间的欧几里得距离
-% n = length(stationX);
-% distances = zeros(n-1, 1);  % 存储相邻台站之间的距离
-% for i = 1:n-1
-%     distances(i) = sqrt((stationX(i) - stationX(i+1))^2 + (stationY(i) - stationY(i+1))^2);
-% end
-% 
-% % 计算相邻台站的平均距离
-% avgDistance = mean(distances);  % 计算相邻台站的平均距离
+if nargin < 2
+    % 计算所有相邻台站之间的欧几里得距离
+    n = length(stationX);
+    distances = zeros(n-1, 1);  % 存储相邻台站之间的距离
+    for i = 1:n-1
+        distances(i) = sqrt((stationX(i) - stationX(i+1))^2 + (stationY(i) - stationY(i+1))^2);
+    end
+    %
+    % 计算相邻台站的平均距离
+    avgDistance = mean(distances);  % 计算相邻台站的平均距离
+    dx = avgDistance;
+    dy = avgDistance;
+end
 
 % 执行主成分分析（PCA）
 coords = [stationX(:), stationY(:)];
@@ -94,8 +96,8 @@ ryInOriginalCoord = ry * coeff';
 %     DataStruct(n).StationInfo.rx = rx(1,)
 % end
 % 获取台阵的范围
-xpad = 3*dx;
-ypad = 3*dy;
+xpad = 10*dx;
+ypad = 5*dy;
 
 x_min = min(projection_on_principal_axis)-xpad;
 x_max = round(max(projection_on_principal_axis)/dx)*dx+xpad;
@@ -156,36 +158,36 @@ secondaryAxisLatLon = [tmplon,tmplat];
 % YInOriginalCoord=YInOriginalCoord-yshift;
 
 % 绘制图形
-% figure;
-% set(gcf,'Position',[0 0 1000 1000],'Color','w')
-% hold on;
-% 
-% % 绘制台站的位置
-% scatter(stationX, stationY, 'r^', 'filled', 'DisplayName', 'Stations');
-% scatter(rxInOriginalCoord(:,1),rxInOriginalCoord(:,2),'b^','DisplayName','Projected X location')
-% scatter(ryInOriginalCoord(:,1),ryInOriginalCoord(:,2),'g^','DisplayName','Projected Y location')
-% 
-% % 绘制主轴和次轴方向
-% % quiver(mean(gridPointsInOriginalCoord(:,1)), mean(gridPointsInOriginalCoord(:,2)), (x_max-x_min)/2*principal_axis(1), (x_max-x_min)/2*principal_axis(2), ...
-% %     'MaxHeadSize', 2, 'LineWidth', 2, 'Color', 'b', 'DisplayName', 'Principal Axis');
-% % quiver(mean(gridPointsInOriginalCoord(:,1)), mean(gridPointsInOriginalCoord(:,2)), (y_max-y_min)/2*secondary_axis(1), (y_max-y_min)/2*secondary_axis(2), ...
-% %     'MaxHeadSize', 2, 'LineWidth', 2, 'Color', 'g', 'DisplayName', 'Secondary Axis');
-% plot(principleAxisInOriginalCoord(:,1),principleAxisInOriginalCoord(:,2),'b','linewidth',2,'DisplayName', 'Principal Axis')
-% plot(secondaryAxisInOriginalCoord(:,1),secondaryAxisInOriginalCoord(:,2),'g','linewidth',2,'DisplayName', 'Secondary Axis')
-% 
-% % 绘制网格点的位置
-% scatter(XInOriginalCoord(:), YInOriginalCoord(:), 10, 'k', 'filled', ...
-%     'DisplayName', 'Grid Points');
-% 
-% % 设置图形
-% xlabel('X (km)');
-% ylabel('Y (km)');
-% legend('show','Location','best');
-% axis equal;
-% grid on;
-% title('Station Positions, PCA Axes, and Grid Points in Original Coordinate System');
-% hold off;
-% set(gca,'fontsize',14)
+figure;
+set(gcf,'Position',[0 0 1000 1000],'Color','w')
+hold on;
+
+% 绘制台站的位置
+scatter(stationX, stationY, 'r^', 'filled', 'DisplayName', 'Stations');
+scatter(rxInOriginalCoord(:,1),rxInOriginalCoord(:,2),'b^','DisplayName','Projected X location')
+scatter(ryInOriginalCoord(:,1),ryInOriginalCoord(:,2),'g^','DisplayName','Projected Y location')
+
+% 绘制主轴和次轴方向
+% quiver(mean(gridPointsInOriginalCoord(:,1)), mean(gridPointsInOriginalCoord(:,2)), (x_max-x_min)/2*principal_axis(1), (x_max-x_min)/2*principal_axis(2), ...
+%     'MaxHeadSize', 2, 'LineWidth', 2, 'Color', 'b', 'DisplayName', 'Principal Axis');
+% quiver(mean(gridPointsInOriginalCoord(:,1)), mean(gridPointsInOriginalCoord(:,2)), (y_max-y_min)/2*secondary_axis(1), (y_max-y_min)/2*secondary_axis(2), ...
+%     'MaxHeadSize', 2, 'LineWidth', 2, 'Color', 'g', 'DisplayName', 'Secondary Axis');
+plot(principleAxisInOriginalCoord(:,1),principleAxisInOriginalCoord(:,2),'b','linewidth',2,'DisplayName', 'Principal Axis')
+plot(secondaryAxisInOriginalCoord(:,1),secondaryAxisInOriginalCoord(:,2),'g','linewidth',2,'DisplayName', 'Secondary Axis')
+
+% 绘制网格点的位置
+scatter(XInOriginalCoord(:), YInOriginalCoord(:), 10, 'k', 'filled', ...
+    'DisplayName', 'Grid Points');
+
+% 设置图形
+xlabel('X (km)');
+ylabel('Y (km)');
+legend('show','Location','best');
+axis equal;
+grid on;
+title('Station Positions, PCA Axes, and Grid Points in Original Coordinate System');
+hold off;
+set(gca,'fontsize',14)
 % construct depth axis
 z = 0:dz:zmax;
 nz = length(z);
@@ -194,6 +196,10 @@ nz = length(z);
 [LonMax,LatMax] = xy2latlon(max(XInOriginalCoord(:)),max(YInOriginalCoord(:)),originLon,originLat);
 % 返回网格的参数
 gridStruct = struct( ...
+    'stationLon', stlo, ...
+    'stationLat', stla, ...
+    'stationX', stationX, ...
+    'stationY', stationY, ...
     'originLon', originLon, ...
     'originLat', originLat, ...
     'originX', 0, ...

@@ -1,8 +1,8 @@
-function ccpResult = CCPCommonEventGather(gather, velocityModel, gridStruct)
+function ccpResult = CCPCommonEventGather(gather, gridStruct)
 % CCPCommonEventGather  Perform Common Conversion Point stacking (CCP) on seismic data.
 %
 % Usage:
-%   ccpResult = CCPCommonEventGather(gather, velocityModel, gridStruct)
+%   ccpResult = CCPCommonEventGather(gather, gridStruct)
 %
 % Inputs:
 %   gather         : Struct array of seismic traces for one event or gather.
@@ -10,9 +10,7 @@ function ccpResult = CCPCommonEventGather(gather, velocityModel, gridStruct)
 %                       .RF.itr            - Iterative decon RF [Nt x 1]
 %                       .TravelInfo.rayParam, .TravelInfo.baz - Ray parameters
 %                       .TimeAxis.t_resample, .TimeAxis.dt_resample - time axis
-%   velocityModel  : Struct describing velocity model with fields:
-%                       .x, .z, .nx, .nz, .dx, .dz, .vp, .vs, ...
-%   gridStruct  : Struct with profile-related info:
+%   gridStruct  : Struct with grid-related info:
 
 %
 % Outputs:
@@ -34,29 +32,20 @@ if isempty(gather) || ~isstruct(gather)
     error('CCPCommonEventGather:InvalidGather', 'Gather must be a non-empty struct array.');
 end
 
-% Validate velocityModel fields (currently disabled)
-% requiredVMfields = {'x', 'z', 'vp', 'vs', 'dx', 'dz', 'nx', 'nz'};
-% Uncomment and complete this validation if needed
-% for f = requiredVMfields
-%     if ~isfield(velocityModel, f{1})
-%         error('CCPCommonEventGather:MissingVelocityModelField', 'Field "%s" is missing in velocityModel.', f{1});
-%     end
-% end
-
 % Display event info if available
 if isfield(gather(1), 'EventInfo') && isfield(gather(1).EventInfo, 'evid')
     disp(['Processing event: ', gather(1).EventInfo.evid]);
 end
 
-%% Unpack Profile and Velocity Model Information
-% Extract velocity model parameters and grid configuration
+%% Unpack Grid Information
+% Extract grid configuration
 % --------------------------------------------------
-% velocityModel contains either 1D or 3D velocity information
-% gridStruct defines the imaging grid parameters
-if strcmp(velocityModel.ModelType ,'1D')
-    vp   = velocityModel.vp(:, 1);  % Assuming vp is 1D
-    vs   = velocityModel.vs(:, 1);  % Assuming vs is 1D
-    z = velocityModel.z;
+% gridStruct contains either 1D or 3D velocity information and
+% defines the imaging grid parameters
+if strcmp(gridStruct.ModelType ,'1D')
+    vp   = gridStruct.vp(:, 1);  % Assuming vp is 1D
+    vs   = gridStruct.vs(:, 1);  % Assuming vs is 1D
+    z = gridStruct.z;
 else
     [z, r, vp, vs, ~, ~] = ak135('cont');
 end
@@ -97,14 +86,14 @@ toc;
 disp('Ray tracing completed');
 
 % make time correction if a regional 3D velocity model is available
-if strcmp(velocityModel.ModelType ,'3D')
-    Fvp = velocityModel.vp;
-    Fvs = velocityModel.vs;
+if strcmp(gridStruct.ModelType ,'3D')
+    Fvp = gridStruct.Fvp;
+    Fvs = gridStruct.Fvs;
     % correct for heterogeneity
     RayDepths = (1*dz:dz:zmax)';
     [TimeCorrections, ~, ~] = correct_RFs(MidPoints, RayDepths, Fvp, Fvs, z, vp, vs);
 else
-    TimeCorrections = zeros(length(zout),length(rfsAll)); 
+    TimeCorrections = zeros(length(zout),length(rfsAll));
 end
 
 % Time-to-Depth Conversion
@@ -143,11 +132,11 @@ end
 % 2. Bin RF amplitudes into spatial grid cells
 % 3. Stack (sum) amplitudes in each cell
 % 4. Normalize by sample count in each cell
-% 
+%
 % Handles both 1D and 3D velocity models differently:
 % - 1D: Simple 2D (distance-depth) stacking
 % - 3D: Full 3D spatial binning with progress tracking
-switch velocityModel.ModelType
+switch gridStruct.ModelType
     % project to profile for 2D imaging
     case '1D'
         % Set grid sizes (distance direction: dx, depth direction: dz)
@@ -174,26 +163,26 @@ switch velocityModel.ModelType
         end
 
         % Generate CCP Image
-        V = V ./ max(count, 1);  % 避免除以0
+%         V = V ./ max(count, 1);  % 避免除以0
 
         %% Plot CCP Image
         try
-            load roma;
+            load('./visualization/colormap/roma.mat');
             cmap = flipud(roma);
         catch
             cmap = parula;
         end
 
-        % figure;
-        % set(gcf, 'Position', [100 100 800 400], 'color', 'w');
-        % imagesc(gridStruct.x, gridStruct.z, V);
-        % caxis([-0.1 0.1]);
-        % colormap(cmap);
-        % colorbar;
-        % xlabel('Distance (km)');
-        % ylabel('Depth (km)');
-        % title('CCP image');
-        % set(gca, 'fontsize', 14);
+        figure;
+        set(gcf, 'Position', [100 100 800 400], 'color', 'w');
+        imagesc(gridStruct.x, gridStruct.z, V);
+        caxis([-0.1 0.1]);
+        colormap(cmap);
+        colorbar;
+        xlabel('Distance (km)');
+        ylabel('Depth (km)');
+        title('CCP image');
+        set(gca, 'fontsize', 14);
 
         %% Save CCP results
         ccpResult = struct('X', X, 'Z', Z, 'img', V, 'count', count);
@@ -219,14 +208,14 @@ switch velocityModel.ModelType
             xx=cp(n).rx;
             yy=cp(n).ry;
             zz=cp(n).zpos;
-            
+
             % 3D stacking
             for k=1:length(zz)
                 i=floor((yy(k)-ymin)/dy)+1;
                 j=floor((xx(k)-xmin)/dx)+1;
-        % Calculate z-layer index
-        m = floor((zz(k) - gridStruct.z(1)) / gridStruct.dz) + 1;
-        % Validate array indices
+                % Calculate z-layer index
+                m = floor((zz(k) - gridStruct.z(1)) / gridStruct.dz) + 1;
+                % Validate array indices
                 if i>=1 && i<=ny && j>=1 && j<=nx && m>=1 && m<=nz
                     amp = cp(n).amp(k);
                     if ~isnan(amp)
@@ -237,7 +226,7 @@ switch velocityModel.ModelType
             end
 
         end
-%         V = V./max(count,1);  % Disabled alternative normalization
+        %         V = V./max(count,1);  % Disabled alternative normalization
 
         ccpResult = struct('X', X, 'Y', Y, 'Z', Z, 'img', V, 'count', count);
 end
