@@ -118,8 +118,8 @@ switch ModelType
 
         % Compute velocities at grid points
         [X, Y, Z] = meshgrid(gridStruct.x, gridStruct.y, gridStruct.z);
-        gridStruct.VP = Fvp(X,Y,Z);
-        gridStruct.VS = Fvs(X,Y,Z);
+%         gridStruct.VP = Fvp(,Y,Z);
+%         gridStruct.VS = Fvs(X,Y,Z);
         gridStruct.Fvp = Fvp;
         gridStruct.Fvs = Fvs;
 end
