@@ -1,4 +1,4 @@
-function [gather, d1_otg] = rankReduction(gather, param)
+function [gather, d1_otg] = rankReduction(gather, gridStruct, param)
 % RANKREDUCTION - Do rank reduction (DRR-OTG) on gather data in 3D (time x x-dist x y-dist)
 %
 % Usage:
@@ -35,8 +35,6 @@ function [gather, d1_otg] = rankReduction(gather, param)
 if ~isfield(param,'nx') || ~isfield(param,'ny')
     error('rankReduction:MissingParam','param.nx and param.ny must be specified.');
 end
-if ~isfield(param,'lonmin'), param.lonmin = 0; end
-if ~isfield(param,'latmin'), param.latmin = 0; end
 if ~isfield(param,'flow'),   param.flow   = 0.1; end
 if ~isfield(param,'fhigh'),  param.fhigh  = 1.2; end
 if ~isfield(param,'rank'),   param.rank   = 10; end
@@ -55,7 +53,7 @@ stlo = [stationList.stlo]';
 stla = [stationList.stla]';
 
 % transform lat lon to x y (relative to param.lonmin, param.latmin)
-[rx, ry] = latlon2xy(stlo, stla, param.lonmin, param.latmin);
+ [rx, ry] = latlonToProjectedCoords(stlo, stla, gridStruct);
 % shift to ensure min coordinate=0
 rx = rx - min(rx);
 ry = ry - min(ry);
