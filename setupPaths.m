@@ -7,6 +7,8 @@ function setupPaths()
     addpath(genpath('./array_processing/'));
     addpath(genpath('./imaging/'));
     addpath(genpath('./visualization/'));
+    addpath(genpath('./results/'));
+    addpath(genpath('./velocity_model/'));
     addpath(genpath('./utilities/'));
     javaaddpath('./utilities/FMI/lib/FMI.jar');
 end
