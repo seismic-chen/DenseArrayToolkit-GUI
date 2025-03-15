@@ -1,4 +1,4 @@
-function [HKresults, plotData] = HKstacking(DataStruct, app, Hall)
+function [HKresults, plotData] = HKstacking(DataStruct, app, Hall, kappa)
     % HKstacking - 利用接收函数Hk叠加计算台站地壳厚度和Vp/Vs(泊松比)
     %
     % 输入:
@@ -15,7 +15,7 @@ function [HKresults, plotData] = HKstacking(DataStruct, app, Hall)
     edep = 0;
 %     Hall = 30:0.1:70;
     % for figure plot
-    kappa = 1.6:0.01:2.0;
+%     kappa = 1.6:0.01:2.0;
     % structure for HK results
     hkstat = struct();
     if_print_result = 1;
