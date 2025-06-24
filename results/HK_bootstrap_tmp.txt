@@ -8,3 +8,5 @@ Sta     Nrfs    Lat     Lon     Ele     H       Hstd    k       kstd    Hb_mean 
 BY007   26      42.34   110.49  -12345.00 34.20   9.18    1.74    0.07    34.28   1.53    1.71    0.05   
 Sta     Nrfs    Lat     Lon     Ele     H       Hstd    k       kstd    Hb_mean Hb_std  kb_mean kb_std 
 BY022   26      42.17   109.01  -12345.00 39.80   5.54    1.86    0.09    39.88   0.40    1.84    0.05   
+Sta     Nrfs    Lat     Lon     Ele     H       Hstd    k       kstd    Hb_mean Hb_std  kb_mean kb_std 
+ATF007  62      41.22   95.37   -12345.00 62.70   10.98   1.66    0.14    59.39   5.49    1.76    0.13   
