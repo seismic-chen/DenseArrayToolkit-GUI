@@ -26,23 +26,22 @@ switch ModelType
         % Get 1D velocity model from CRUST1.0
         model = obtain_crust1_QB();
         nx = gridStruct.nx;
+        ny = gridStruct.ny;
         
         % Interpolate P and S wave velocities to grid points
         vp = interp1(model(:,1), model(:,2), gridStruct.z, 'nearest', 'extrap');
         vs = interp1(model(:,1), model(:,3), gridStruct.z, 'nearest', 'extrap');
-        vel = repmat(vp(:), 1, nx);
-        vel_s = repmat(vs(:), 1, nx);
         
-        % Apply smoothing to velocity models using moving average
-        N = 5;  % Smoothing window size
-        [vel,~] = moving_avg(vel, N, 'constant', 2);
-        [vel,~] = moving_avg(vel, N, 'constant');
-        [vel_s,~] = moving_avg(vel_s, N, 'constant', 2);
-        [vel_s,~] = moving_avg(vel_s, N, 'constant');
+        N = 3;  % Smoothing window size
+        vp = moving_avg(vp, N, 'constant', 1);
+        vs = moving_avg(vs, N, 'constant', 1);
         
-        gridStruct.vp = vel;
-        gridStruct.vs = vel_s;
-        
+        vel = repmat(vp(:), 1, nx, ny);
+        vel_s = repmat(vs(:), 1, nx, ny);
+         
+        gridStruct.VP = vel;
+        gridStruct.VS = vel_s;
+ 
     case '2D'
         % TODO: Implement 2D velocity model
         warning('2D velocity model not implemented yet');
@@ -56,7 +55,7 @@ switch ModelType
 
         % Get AK135 reference model
         [z, rho, vp, vs, qk, qm] = ak135('cont');
-        zmax = 800;
+        zmax = 100;  % ccp 800km
         dz = 0.5;
 
         % Initialize arrays for storing 3D model data
@@ -67,16 +66,19 @@ switch ModelType
         latall = linspace(LatMin, LatMax, npts);
         lonall = linspace(LonMin, LonMax, npts);
         
+        vpgrid = zeros(zmax/dz,npts,npts);
+        vsgrid = zeros(zmax/dz,npts,npts);
+        
         % Loop through each grid point to build 3D model
         for i = 1:length(latall)
             for j = 1:length(lonall)
                 knode = knode + 1;
-                disp(['Processing node ', num2str(knode), ' of ', num2str(npts^2)]);
+                disp(['Processing node ', num2str(knode), ' of ', num2str(npts*npts)]);
                 
                 % Get velocity model at current location
                 lat = latall(i);
                 lon = lonall(j);
-                % note that m0 starts at 0 km depth. The elevation infomration is
+% note that                 m0 starts at 0 km depth. The elevation infomration is
                 % missing, to include topography set if_topo to 1
                 % if_topo = 1;
                 % [m0,~] = obtain_crust1_v2(lat,lon,[],if_topo);
@@ -109,6 +111,10 @@ switch ModelType
                 Y = [Y; ones(size(vptemp'))*lat];
                 VP = [VP; vptemp'];
                 VS = [VS; vstemp'];
+                
+                vpgrid(:,j,i) = vptemp;
+                vsgrid(:,j,i) = vstemp;
+
             end
         end
 
@@ -117,10 +123,45 @@ switch ModelType
         Fvs = scatteredInterpolant(X, Y, Z, VS);
 
         % Compute velocities at grid points
-        [X, Y, Z] = meshgrid(gridStruct.x, gridStruct.y, gridStruct.z);
-%         gridStruct.VP = Fvp(,Y,Z);
-%         gridStruct.VS = Fvs(X,Y,Z);
+        % [X, Y, Z] = meshgrid(gridStruct.x, gridStruct.y, gridStruct.z);
+        % gridStruct.VP = Fvp(X,Y,Z);
+        % gridStruct.VS = Fvs(X,Y,Z);
         gridStruct.Fvp = Fvp;
         gridStruct.Fvs = Fvs;
+
+        % at grids 
+        [Xg, Yg] = latlon2xy(X, Y, gridStruct.originLon, gridStruct.originLat);
+        coords = [Xg(:), Yg(:)];
+        coeff = gridStruct.coeff;
+
+        principal_axis = coeff(:,1);  
+        secondaryAxis = coeff(:,2); 
+
+
+        projection_on_principal_axis = coords * principal_axis;
+        projection_on_secondary_axis = coords * secondaryAxis;
+
+        vgrid1 = [projection_on_principal_axis,zeros(size(projection_on_principal_axis))];
+        vgrid2 = [zeros(size(projection_on_secondary_axis)),projection_on_secondary_axis];
+
+        %% 
+        F1 = scatteredInterpolant(vgrid1(:,1), vgrid2(:,2), Z, Fvp.Values);
+        F2 = scatteredInterpolant(vgrid1(:,1), vgrid2(:,2), Z, Fvs.Values);
+
+        xq = repmat(gridStruct.x,gridStruct.nz,1);
+        xq = xq(:);
+        xq = repmat(xq,gridStruct.ny,1);
+
+        yq = repmat(gridStruct.y,gridStruct.nz*gridStruct.nx,1);
+        yq = yq(:);
+        zq = repmat(gridStruct.z',gridStruct.nx*gridStruct.ny,1);
+
+        v1 = F1(xq,yq,zq);
+        v2 = F2(xq,yq,zq);
+        
+        gridStruct.VP = reshape(v1,gridStruct.nz,gridStruct.nx,gridStruct.ny);
+        gridStruct.VS = reshape(v2,gridStruct.nz,gridStruct.nx,gridStruct.ny);
+
+
 end
 end
