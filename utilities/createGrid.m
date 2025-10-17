@@ -1,7 +1,9 @@
-function  gridStruct = createGrid(DataStruct, dx, dy, dz, zmax)
-if nargin < 4
+function  gridStruct = createGrid(DataStruct, dx, dy, dz, zmax, xpad, ypad)
+if nargin <= 4
     dz = 1;
     zmax = 100;
+    xpad = 3*dx;
+    ypad = 3*dy;
 end
 % 从数据结构中提取台站信息
 stationList = getStations(DataStruct);
@@ -96,14 +98,13 @@ ryInOriginalCoord = ry * coeff';
 %     DataStruct(n).StationInfo.rx = rx(1,)
 % end
 % 获取台阵的范围
-xpad = 10*dx;
-ypad = 5*dy;
+% xpad = 1*dx;
+% ypad = 1*dy;
 
 x_min = min(projection_on_principal_axis)-xpad;
 x_max = round(max(projection_on_principal_axis)/dx)*dx+xpad;
 y_min = min(projection_on_secondary_axis)-ypad;
 y_max = round(max(projection_on_secondary_axis)/dy)*dy+ypad;
-
 
 % 创建网格
 nx = floor((x_max - x_min) / dx) + 1;
@@ -213,7 +214,7 @@ gridStruct = struct( ...
     'x', x, ...
     'y', y, ...
     'z', z, ...
-    'XInOriginalCoord',XInOriginalCoord, ...
+    'XInOriginalCoord', XInOriginalCoord, ...
     'YInOriginalCoord', YInOriginalCoord, ...
     'dx', dx, ...
     'dy', dy, ...

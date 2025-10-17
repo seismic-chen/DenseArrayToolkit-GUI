@@ -59,7 +59,7 @@ config.MigParam.rank_p      = 8;     % rank parameter for SSA
 config.MigParam.alpha       = 0.9;   % weight parameter for SSA
 config.MigParam.n_iter      = 20;    % number of iterations for migration
 config.MigParam.gauss       = 2.5;   % Gaussian parameter for migration
-config.MigParam.phaseshift  = 5;     % phase parameter for migration
+config.MigParam.phaseshift  = config.DeconvParam.phaseshift;     % phase parameter for migration
 %% 5. Array & event filtering parameters
 config.max_angle_diff  = 15; % max azimuth difference (deg)
 config.profile_length  = 4;  % profile length (degree)
