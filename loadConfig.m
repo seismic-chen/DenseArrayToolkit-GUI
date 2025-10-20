@@ -36,19 +36,19 @@ config.RadonParam.N2         = 1;        % number of outer loop iterations
 config.RadonParam.plotRadon  = false;    % plot Radon results (true/false)
 
 %% 4. Rank Reduction parameters (Off-the-grid reconstruction)
-config.RankReductionParam.lonmin = 109.000;  % minimum longitude for grid
-config.RankReductionParam.latmin = 41.1667;  % minimum latitude for grid
-config.RankReductionParam.nx=11;   % number of grid points in x-direction
-config.RankReductionParam.ny=14;   % number of grid points in y-direction
-config.RankReductionParam.rank = 5;  % rank for rank reduction
-config.RankReductionParam.niter = 5; % number of iterations
-config.RankReductionParam.mode=1;    % mode for rank reduction
-config.RankReductionParam.verb=true;    % verbosity flag
-config.RankReductionParam.eps=0.00001; % epsilon for convergence
-config.RankReductionParam.K=4;       % parameter K for rank reduction
-config.RankReductionParam.flow=0.1;  % lower frequency bound
-config.RankReductionParam.fhigh=1.2; % upper frequency bound
-config.RankReductionParam.tmax=50;   % maximum time
+config.RankReductionParam.lonmin    = 109.000;  % minimum longitude for grid
+config.RankReductionParam.latmin    = 41.1667;  % minimum latitude for grid
+config.RankReductionParam.dx        = 5;        % spacing in x-direction
+config.RankReductionParam.dy        = 3;       % spacing in y-direction
+config.RankReductionParam.rank      = 5;        % rank for rank reduction
+config.RankReductionParam.niter     = 5;        % number of iterations
+config.RankReductionParam.mode      = 1;        % mode for rank reduction
+config.RankReductionParam.verb      = true;     % verbosity flag
+config.RankReductionParam.eps       = 0.00001;  % epsilon for convergence
+config.RankReductionParam.K         = 4;        % parameter K for rank reduction
+config.RankReductionParam.flow      = 0.1;      % lower frequency bound
+config.RankReductionParam.fhigh     = 1.2;      % upper frequency bound
+config.RankReductionParam.tmax      = 50;       % maximum time
 
 %% 5. Migration imaging parameters
 config.MigParam = struct();

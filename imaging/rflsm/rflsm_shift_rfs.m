@@ -25,7 +25,7 @@ x = param.binning.x;
 z = param.binning.z;
 nx = param.binning.nx;
 nz = param.binning.nz;
-xmax=param.binning.xmax;
+
 ph=abs(t(1));
 bc = 1;
 flow = param.flow;
@@ -72,7 +72,7 @@ title('P wave')
 set(gca,'fontsize',14)
 colorbar
 caxis([-0.2 0.2])
-xlim([0,xmax])
+xlim([0,max(x)])
 
 subplot(122)
 imagesc(x,t,dshift);
@@ -83,6 +83,6 @@ set(gca,'fontsize',14)
 colorbar
 colormap(seismic(3));
 caxis([-0.1 0.1])
-xlim([0,xmax])
+xlim([0,max(x)])
 % figname=['rf_tshift.',num2str(ishot),'.png'];
 % export_fig(fig2,fullfile(figdir,figname));

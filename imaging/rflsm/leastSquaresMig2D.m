@@ -1,8 +1,8 @@
-function MigResult = leastSquaresMig(gather, velocityModel, profileStruct, param)
+function MigResult = leastSquaresMig2D(gather, gridStruct, param)
 % LEASTSQUARESMIG  Perform least squares migration (LSM) on seismic data.
 %
 % Usage:
-%   MigResult = leastSquaresMig(gather, velocityModel, profileStruct, param)
+%   MigResult = leastSquaresMig2D(gather, gridStruct, param)
 %
 % Inputs:
 %   gather         : A struct array of seismic traces for one event or gather.
@@ -11,14 +11,8 @@ function MigResult = leastSquaresMig(gather, velocityModel, profileStruct, param
 %                       .TravelInfo.rayParam, .baz - Ray parameter, back-azimuth
 %                       .TimeAxis.t_resample, .TimeAxis.dt_resample - time axis
 %
-%   velocityModel  : Struct describing velocity model, e.g.:
-%                       .x, .z, .nx, .nz, .dx, .dz, .vp, .vs, ...
-%                     Additional fields can be included if needed.
 %
-%   profileStruct  : Struct with profile-related info, e.g.:
-%                       .line_points   [N x 2] (lon, lat) or (x, y)
-%                       .center        [lon0, lat0] or [x0, y0]
-%                       .direction     'NE-SW' or other orientation
+%   gridStruct  : Struct with grid-related info, e.g.:
 %
 %   param          : Migration and reconstruction parameters, for example:
 %       .ssa        (bool)   - if true, use SSA-based reconstruction
@@ -29,7 +23,7 @@ function MigResult = leastSquaresMig(gather, velocityModel, profileStruct, param
 %       .itermax    (int)    - max iteration for LSM
 %       .mu         (double) - damping or regularization factor
 %       .xpad       (double) - horizontal padding (for advanced modeling)
-%       etc.
+%       .plotMig    (bool)   - if true, plot migration results
 %
 % Outputs:
 %   MigResult : Struct containing migration results. Common fields:
@@ -40,7 +34,7 @@ function MigResult = leastSquaresMig(gather, velocityModel, profileStruct, param
 %
 % Example:
 %   config.MigParam.zmax = 100;
-%   MigResult = leastSquaresMig(gather, velocityModel, profile, config.MigParam);
+%   MigResult = leastSquaresMig(gather, profile, config.MigParam);
 %
 % Author:  Yunfeng Chen (Refined by ChatGPT)
 % Date   :  Jan. 25, 2025
@@ -48,7 +42,7 @@ function MigResult = leastSquaresMig(gather, velocityModel, profileStruct, param
 %% ------------------------------------------------------------------------
 %  (0) Check input structures & fill default parameters
 % -------------------------------------------------------------------------
-if nargin < 4,  param = struct(); end
+if nargin < 3,  param = struct(); end
 
 % Ensure gather has at least one valid entry
 if isempty(gather) || ~isstruct(gather)
@@ -56,28 +50,19 @@ if isempty(gather) || ~isstruct(gather)
           'Gather is empty or not a struct array.');
 end
 
-% Check velocityModel fields (you can expand these checks as needed)
-requiredVMfields = {'x','z','vp','vs','dx','dz','nx','nz'};
-for f = requiredVMfields
-    if ~isfield(velocityModel, f{1})
-        error('leastSquaresMig:MissingVelocityModelField',...
-             'velocityModel.%s is missing.', f{1});
-    end
-end
-
 % Fill param defaults
 if ~isfield(param,'ssa'),        param.ssa = false; end
 if ~isfield(param,'dz'),         param.dz = 1;      end
 if ~isfield(param,'zmax'),       param.zmax = 800;  end
-if ~isfield(param,'plotBinned'), param.plotBinned = true; end
+if ~isfield(param,'plotBinned'), param.plotBinned = false; end
 if ~isfield(param,'binning') || ~isfield(param.binning,'dx')
-    % If binning not given, default to velocityModel.dx
-    param.binning = velocityModel;
+    % If binning not given, default to gridStruct.dx
+    param.binning = gridStruct;
 end
 if ~isfield(param,'itermax'), param.itermax = 20; end
 if ~isfield(param,'mu'),      param.mu = 0.1;     end
 if ~isfield(param,'xpad'),    param.xpad = 0;     end
-
+if ~isfield(param,'plotMig'), param.plotMig = false;    end
 % Display some gather info if present
 if isfield(gather(1), 'EventInfo') && isfield(gather(1).EventInfo, 'evid')
     disp(['[leastSquaresMig] Processing event: ' gather(1).EventInfo.evid]);
@@ -87,23 +72,49 @@ end
 %  (1) Unpack profile & velocity model info
 % -------------------------------------------------------------------------
 % Example usage of profileStruct: (lon1, lat1) to (lon2, lat2)
-lon1 = profileStruct.line_points(1, 1);
-lat1 = profileStruct.line_points(1, 2);
-lon2 = profileStruct.line_points(end, 1);
-lat2 = profileStruct.line_points(end, 2);
+lon1 = gridStruct.principalAxisLatLon(1, 1);
+lat1 = gridStruct.principalAxisLatLon(1, 2);
+lon2 = gridStruct.principalAxisLatLon(end, 1);
+lat2 = gridStruct.principalAxisLatLon(end, 2);
+
+evla = gather(1).EventInfo.evla;
+evlo = gather(1).EventInfo.evlo;
+
+% check distance to end points of the profile
+[dist1,az1] = distance(evla,evlo,lat1,lon1);
+[dist2,az2] = distance(evla,evlo,lat2,lon2);
+
+% incidence direction is 1 if wavefield is propagating towards the
+% positive direction of the profile and -1 otherwise
+if dist2 > dist1
+    incidence_direction = 1;
+else
+    incidence_direction = -1;
+end
+
+% project to profile
+stla = cellfun(@(stationinfo) stationinfo.stla, {gather.StationInfo}, 'UniformOutput', false);
+stlo = cellfun(@(stationinfo) stationinfo.stlo, {gather.StationInfo}, 'UniformOutput', false);
+stlo = cell2mat(stlo)';
+stla = cell2mat(stla)';
+[rx, ry] = latlonToProjectedCoords(stlo, stla, gridStruct);
+for n=1:length(gather)
+    gather(n).RF.rx = rx(n);
+end
+
 % If you need to compute great-circle distances, do so here,
 % or if it's a simple local coordinate system, you can handle that as well.
 
 % Unpack some velocity model fields
-x    = velocityModel.x;
-z    = velocityModel.z;
-dx   = velocityModel.dx;
-dz   = velocityModel.dz;
-vp   = velocityModel.vp;
-vs   = velocityModel.vs;
-nx   = velocityModel.nx;
-nz   = velocityModel.nz;
-xpad = param.xpad;  % Horizontal padding if relevant
+x    = gridStruct.x;
+z    = gridStruct.z;
+dx   = gridStruct.dx;
+dz   = gridStruct.dz;
+vp   = gridStruct.vp;
+vs   = gridStruct.vs;
+nx   = gridStruct.nx;
+nz   = gridStruct.nz;
+xpad = abs(x(1));  % Horizontal padding if relevant
 
 % If you want to restrict the imaging domain according to zmax:
 zmaxSamples = floor(param.zmax / dz);
@@ -139,7 +150,7 @@ rxCell  = cellfun(@(rf) rf.rx, itrAll, 'UniformOutput', false);
 rx      = cell2mat(rxCell);           % [1 x Ntrace]
 
 % Combine all itr traces into a matrix [Nt x Ntrace]
-itrMat = cell2mat(cellfun(@(rf) rf.itr, itrAll, 'UniformOutput', false)); 
+itrMat = cell2mat(cellfun(@(rf) rf.itr, itrAll, 'UniformOutput', false));
 
 % Time axis from the first valid record
 timeAxis = gval(1).RF.ittime;  % or gather(find(validMask,1)).RF.ittime
@@ -150,7 +161,7 @@ nt       = length(timeAxis);
 %  (3) Binning the traces along the x-axis
 % -------------------------------------------------------------------------
 % Binning step: group traces into horizontal bins of width param.binning.dx
-dBinned = doBinning(itrMat, rx, x, param.binning.dx);  
+dBinned = doBinning(itrMat, rx, x, param.binning.dx);
 % dBinned => [Nt x nx], each column is the average of all traces that fall
 %            into that bin's x-range
 
@@ -189,11 +200,11 @@ end
 % Gather average ray param & baz if needed
 raypAll = [gval.TravelInfo];
 avgRayp  = mean([raypAll.rayParam]) / 6371;  % e.g., if rayParam is in s/deg, or s/radius
-avgBaz   = mean([raypAll.baz]);
-vpSurf   = mean(vp(end,:));  % example: near bottom row or top row, depending
+% avgBaz   = mean([raypAll.baz]);
+vpBottom   = mean(vp(end,:));  % example: near bottom row or top row, depending
 
 % Create or define a source wavelet for LSM
-[src, pos, tshift] = rflsm_create_src(dt_samp, nt, avgRayp, avgBaz, vpSurf, param);
+[src, pos, tshift] = rflsm_create_src(dt_samp, nt, avgRayp, incidence_direction, vpBottom, param);
 % Scale source if needed
 src = src * max(mean(itrMat, 2));
 
@@ -216,26 +227,28 @@ param.mu      = param.mu;
 
 %% ------------------------------------------------------------------------
 %  (8) Plot migration results
-% -------------------------------------------------------------------------
-figure('Name','Migration Results','Color','w','Position',[100, 100, 800, 800]);
+if param.plotMig
+    % -------------------------------------------------------------------------
+    figure('Name','Migration Results','Color','w','Position',[100, 100, 800, 800]);
 
-% Normal Migration
-subplot(2,1,1);
-imagesc(x, z, mig ./ max(abs(mig(:)))); hold on;
-axis([x(1) x(end) 0 100]);
-xlabel('Distance (km)'); ylabel('Depth (km)');
-title('Migration Image');
-set(gca,'FontSize',14); 
-caxis([-0.2 0.2]); colormap(seismic(3)); colorbar;
+    % Normal Migration
+    subplot(2,1,1);
+    imagesc(x, z, mig ./ max(abs(mig(:)))); hold on;
+    axis([x(1) x(end) 0 100]);
+    xlabel('Distance (km)'); ylabel('Depth (km)');
+    title('Migration Image');
+    set(gca,'FontSize',14);
+    caxis([-0.2 0.2]); colormap(seismic(3)); colorbar;
 
-% LSM
-subplot(2,1,2);
-imagesc(x, z, migls ./ max(abs(migls(:)))); hold on;
-axis([x(1) x(end) 0 100]);
-xlabel('Distance (km)'); ylabel('Depth (km)');
-title('Least Squares Migration (LSM)');
-set(gca,'FontSize',14);
-caxis([-0.2 0.2]); colorbar;
+    % LSM
+    subplot(2,1,2);
+    imagesc(x, z, migls ./ max(abs(migls(:)))); hold on;
+    axis([x(1) x(end) 0 100]);
+    xlabel('Distance (km)'); ylabel('Depth (km)');
+    title('Least Squares Migration (LSM)');
+    set(gca,'FontSize',14);
+    caxis([-0.2 0.2]); colorbar;
+end
 
 %% ------------------------------------------------------------------------
 %  (9) Prepare output structure
@@ -279,3 +292,4 @@ for i = 1:nx
 end
 
 end
+

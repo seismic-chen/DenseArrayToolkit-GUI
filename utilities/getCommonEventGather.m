@@ -1,47 +1,49 @@
 function [CommonEventGather,matchIndex] = getCommonEventGather(DataStruct, EventID)
-% GETCOMMANDEVENTGATHER 提取来自同一事件的所有台站数据
+% GETCOMMONEVENTGATHER Extract station data from the same seismic event
 %
-% 使用方法:
+% Syntax:
 %   CommonEventGather = getCommonEventGather(DataStruct, EventID)
 %
-% 输入参数:
-%   DataStruct - struct 数组，包含字段:
-%       .EventInfo.evid - 事件标识符（字符串）
-%   EventID    - 要提取的事件标识符（字符串）
+% Input Parameters:
+%   DataStruct - struct array containing fields:
+%       .EventInfo.evid - Event identifier (string)
+%   EventID    - Target event identifier to extract (string)
 %
-% 输出参数:
-%   CommonEventGather - struct 数组，仅包含与 EventID 匹配的记录
+% Output Parameters:
+%   CommonEventGather - struct array containing only records matching EventID
+%   matchIndex        - indices of matching records in the original DataStruct
 %
-% 示例:
+% Example:
 %   CommonGather = getCommonEventGather(DataStruct, 'EV12345');
 
     %% 1. 输入参数验证
     if nargin < 2
-        error('getCommonEventGather:InsufficientInputs', '需要两个输入参数: DataStruct 和 EventID.');
+        error('getCommonEventGather:InsufficientInputs',...
+            'Two input arguments required: DataStruct and EventID');
     end
     
     if ~isstruct(DataStruct)
-        error('getCommonEventGather:InvalidDataStruct', 'DataStruct 必须是一个结构数组.');
+        error('getCommonEventGather:InvalidDataStruct', 'DataStruct must be a structure variable');
     end
     
     if ~isfield(DataStruct, 'EventInfo') || ~isfield(DataStruct(1).EventInfo, 'evid')
-        error('getCommonEventGather:MissingField', 'DataStruct 中必须包含 EventInfo.evid 字段.');
+        error('getCommonEventGather:MissingField', 'must contain EventInfo.evid field');
     end
     
     if ~(ischar(EventID) || isstring(EventID))
-        error('getCommonEventGather:InvalidEventID', 'EventID 必须是字符串或字符数组.');
+        error('getCommonEventGather:InvalidEventID', 'EventID must be a string or character');
     end
 
-    %% 2. 使用逻辑索引筛选匹配的记录
-    % 使用 arrayfun 创建逻辑数组，检查每个记录的 EventID 是否匹配
+    %% 2. Filter matching records using logical indexing
+    % Use arrayfun to create logical array checking EventID match for each record
     isMatch = arrayfun(@(x) strcmp(x.EventInfo.evid, EventID), DataStruct);
     matchIndex = find(isMatch);
-    % 根据逻辑数组提取匹配的记录
+    % Extract matching records based on logical array
     CommonEventGather = DataStruct(isMatch);
-    %% 3. 处理未找到的情况
+    %% 3. Handle no matches found
     if isempty(CommonEventGather)
-        warning('getCommonEventGather:NoMatch', '未找到与 EventID "%s" 匹配的记录.', EventID);
+        warning('getCommonEventGather:NoMatch', 'No records found matching EventID "%s".', EventID);
     else
-        fprintf('找到 %d 条与 EventID "%s" 匹配的记录.\n', length(CommonEventGather), EventID);
+        fprintf('Found %d records matching EventID: "%s"\n', length(CommonEventGather), EventID);
     end
 end
