@@ -1,59 +1,57 @@
 function [CommonStationGather, matchIndex] = getCommonStationGather(DataStruct, station, matchOptions)
-% GETCOMMONSTATIONGATHER 提取来自指定台站的所有记录
+% GETCOMMONSTATIONGATHER Extract all records from specified station(s)
 %
-% 使用方法:
+% Syntax:
 %   [CommonStationGather, matchIndex] = getCommonStationGather(DataStruct, station, matchOptions)
 %
-% 输入参数:
-%   DataStruct   - struct 数组，包含字段:
-%                   .StationInfo.sta - 台站名称（字符串）
-%   station      - 要提取的台站名称（字符串）或台站名称的字符串数组
-%   matchOptions - (可选) 匹配选项，结构体包含字段:
-%                   .CaseInsensitive - 是否忽略大小写（逻辑值，默认: false）
-%                   .PartialMatch     - 是否进行部分匹配（逻辑值，默认: false）
+% Input Parameters:
+%   DataStruct   - struct array containing fields:
+%                   .StationInfo.sta - Station name (string)
+%   station      - Station name(s) to extract (string, char, or string array)
+%   matchOptions - (optional) Matching options structure with fields:
+%                   .CaseInsensitive - Case-insensitive matching (logical, default: false)
+%                   .PartialMatch    - Partial string matching (logical, default: false)
 %
-% 输出参数:
-%   CommonStationGather - struct 数组，仅包含与指定台站匹配的记录
-%   matchIndex          - 数组，匹配记录在原 DataStruct 中的索引
+% Output Parameters:
+%   CommonStationGather - struct array containing only records matching specified station(s)
+%   matchIndex          - indices of matching records in original DataStruct
 %
-% 示例:
-%   % 提取单个台站，精确匹配，区分大小写
+% Examples:
+%   % Extract single station, exact match, case-sensitive
 %   [Gather, idx] = getCommonStationGather(DataStruct, 'STA1');
 %
-%   % 提取多个台站，忽略大小写，精确匹配
+%   % Extract multiple stations, case-insensitive, exact match
 %   [Gather, idx] = getCommonStationGather(DataStruct, {'sta1', 'Sta2'}, struct('CaseInsensitive', true));
 %
-%   % 提取包含 'STA' 的台站，忽略大小写，部分匹配
+%   % Extract stations containing 'STA', case-insensitive, partial match
 %   [Gather, idx] = getCommonStationGather(DataStruct, 'STA', struct('CaseInsensitive', true, 'PartialMatch', true));
 %
-% 作者: <你的名字>
-% 日期: <日期>
 
-    %% 1. 输入参数验证
+    %% 1. Input Validation
     if nargin < 2
-        error('getCommonStationGather:InsufficientInputs', '需要至少两个输入参数: DataStruct 和 station.');
+        error('getCommonStationGather:InsufficientInputs', 'At least two input arguments required: DataStruct and station.');
     end
 
     if ~isstruct(DataStruct)
-        error('getCommonStationGather:InvalidDataStruct', 'DataStruct 必须是一个结构数组.');
+        error('getCommonStationGather:InvalidDataStruct', 'DataStruct must be a structure');
     end
 
-    % 检查 DataStruct 是否包含 StationInfo 和 StationInfo.sta
+    % Check if DataStruct contains StationInfo and StationInfo.sta
     if ~all(isfield(DataStruct, 'StationInfo')) || ~all(isfield([DataStruct.StationInfo], 'sta'))
-        error('getCommonStationGather:MissingField', 'DataStruct 中的每个元素必须包含 StationInfo.sta 字段.');
+        error('getCommonStationGather:MissingField', 'Each element in DataStruct must contain StationInfo.sta field.');
     end
 
-    % 检查 station 是否为字符串或字符串数组
+    % Check if station is string or string array
     if ~(ischar(station) || isstring(station) || (iscellstr(station) || isstring(station)))
-        error('getCommonStationGather:InvalidStation', 'station 必须是字符串、字符串数组或字符数组的单元格.');
+        error('getCommonStationGather:InvalidStation', 'station must be a string, char array, or cell array of strings.');
     end
 
-    % 处理 matchOptions
+    % Handle matchOptions
     if nargin < 3 || isempty(matchOptions)
         matchOptions = struct();
     end
 
-    % 设置默认匹配选项
+    % Set default options
     if ~isfield(matchOptions, 'CaseInsensitive')
         matchOptions.CaseInsensitive = false;
     end
@@ -61,22 +59,21 @@ function [CommonStationGather, matchIndex] = getCommonStationGather(DataStruct, 
         matchOptions.PartialMatch = false;
     end
 
-    %% 2. 提取所有台站名称
+    %% 2. Extract all station names
     stationNames = {};
     for n = 1:length(DataStruct)
         stationNames{end+1} = DataStruct(n).StationInfo.sta;
     end
-    %% 3. 生成匹配逻辑数组
+    %% 3. Generate matching logical array
     if ischar(station) || isstring(station)
-        station = {station};  % 转换为单元格数组
+        station = {station};  % Convert to cell array
     elseif iscell(station)
-        % 确保所有元素都是字符串
         if ~all(cellfun(@(x) ischar(x) || isstring(x), station))
-            error('getCommonStationGather:InvalidStation', 'station 单元格数组中的所有元素必须是字符串或字符数组.');
+            error('getCommonStationGather:InvalidStation', 'All station cell elements must be strings or char');
         end
     end
 
-    % 初始化匹配逻辑数组
+    % Initialize matching logical array
     isMatch = false(size(stationNames));
 
     for i = 1:length(station)
@@ -95,14 +92,14 @@ function [CommonStationGather, matchIndex] = getCommonStationGather(DataStruct, 
         end
     end
 
-    %% 4. 提取匹配的记录和索引
+    %% 4. Extract matching records and indices
     matchIndex = find(isMatch);
     CommonStationGather = DataStruct(isMatch);
 
-    %% 5. 处理未找到的情况
+    %% 5. Handle no matches found
     if isempty(CommonStationGather)
-        warning('getCommonStationGather:NoMatch', '未找到与指定台站匹配的记录.');
+         warning('getCommonStationGather:NoMatch', 'No records found matching the specified station(s).');
     else
-        fprintf('找到 %d 条与指定台站匹配的记录.\n', length(CommonStationGather));
+        fprintf('Found %d records matching the specified station \n', length(CommonStationGather));
     end
 end
