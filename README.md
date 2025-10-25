@@ -1,5 +1,5 @@
 # DenseArrayToolkit-GUI
-![License](https://img.shields.io/badge/License-GPL--3.0-blue)
+[![License](https://img.shields.io/badge/License-GPL--3.0-blue)](https://www.gnu.org/licenses/gpl-3.0.en.html#license-text)
 ![Last Commit](https://img.shields.io/github/last-commit/seismic-chen/DenseArrayToolkit-GUI)
 ![GitHub Pull Requests](https://img.shields.io/github/issues-pr/seismic-chen/DenseArrayToolkit-GUI)
 ![GitHub Issues](https://img.shields.io/github/issues/seismic-chen/DenseArrayToolkit-GUI)
