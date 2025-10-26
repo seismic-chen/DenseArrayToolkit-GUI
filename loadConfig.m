@@ -69,4 +69,14 @@ config.dataFolder      = './data/event_waveforms_BY'; % data folder path
 config.outputFolder    = './results';                 % output folder
 config.saveResults     = true;                        % whether to save results
 config.visualizeResults= true;                        % whether to visualize results
+
+%% 7. Hk parameters
+config.HKStackingParam.hmin = 30;
+config.HKStackingParam.hmax = 70;
+config.HKStackingParam.dh = 0.1;
+config.HKStackingParam.kmin = 1.6;
+config.HKStackingParam.kmax = 2.0;
+config.HKStackingParam.dk = 0.01;
+
+
 end

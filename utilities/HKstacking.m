@@ -10,7 +10,9 @@ function [HKresults, plotData] = HKstacking(DataStruct, app, Hall, kappa)
     %   Hstd     - 台站下方地壳厚度误差估计
     %   k - 台站下方地壳平均Vp/Vs
     %   kstd - 台站下方地壳平均Vp/Vs误差估计
-    
+    global Hall
+    global kappa
+
     R = 6371; % radius of the Earth
     edep = 0;
 %     Hall = 30:0.1:70;

@@ -14,10 +14,13 @@ function [best_pair] = hk_stack_bootstrap(stack1,stack2,stack3)
 % best_pair: 1*2 matrix containts the best H and K estimate corresponds 
 % to the maximum amplidute in HK domain
 
-Hall = 30:0.1:70;
-% make sure the kappa is the same with that in the main function
-kappa = 1.6:0.01:2.0;
+% Hall = 30:0.1:70;
+% % make sure the kappa is the same with that in the main function
+% kappa = 1.6:0.01:2.0;
 % kappa = 1.6:0.002:2.0;
+
+global Hall
+global kappa
 
 [N,M] = size(stack1);
 % Pms
