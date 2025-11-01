@@ -43,8 +43,8 @@ end
 % gridStruct contains either 1D or 3D velocity information and
 % defines the imaging grid parameters
 if strcmp(gridStruct.ModelType ,'1D')
-    vp   = gridStruct.vp(:, 1);  % Assuming vp is 1D
-    vs   = gridStruct.vs(:, 1);  % Assuming vs is 1D
+    vp   = gridStruct.VP(:, 1);  % Assuming vp is 1D
+    vs   = gridStruct.VS(:, 1);  % Assuming vs is 1D
     z = gridStruct.z;
 else
     [z, r, vp, vs, ~, ~] = ak135('cont');
@@ -136,6 +136,8 @@ end
 % Handles both 1D and 3D velocity models differently:
 % - 1D: Simple 2D (distance-depth) stacking
 % - 3D: Full 3D spatial binning with progress tracking
+
+%% should be adjusted to different array geometries
 switch gridStruct.ModelType
     % project to profile for 2D imaging
     case '1D'
@@ -173,19 +175,19 @@ switch gridStruct.ModelType
             cmap = parula;
         end
 
-        figure;
-        set(gcf, 'Position', [100 100 800 400], 'color', 'w');
-        imagesc(gridStruct.x, gridStruct.z, V);
-        caxis([-0.1 0.1]);
-        colormap(cmap);
-        colorbar;
-        xlabel('Distance (km)');
-        ylabel('Depth (km)');
-        title('CCP image');
-        set(gca, 'fontsize', 14);
+        % figure;
+        % set(gcf, 'Position', [100 100 800 400], 'color', 'w');
+        % imagesc(gridStruct.x, gridStruct.z, V);
+        % caxis([-0.1 0.1]);
+        % colormap(cmap);
+        % colorbar;
+        % xlabel('Distance (km)');
+        % ylabel('Depth (km)');
+        % title('CCP image');
+        % set(gca, 'fontsize', 14);
 
         %% Save CCP results
-        ccpResult = struct('X', X, 'Z', Z, 'img', V, 'count', count);
+        % ccpResult = struct('X', X, 'Z', Z, 'img', V, 'count', count);
     case '3D'
         nx = gridStruct.nx;
         ny = gridStruct.ny;

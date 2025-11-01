@@ -10,8 +10,9 @@ function [HKresults, plotData] = HKstacking(DataStruct, app, Hall, kappa)
     %   Hstd     - 台站下方地壳厚度误差估计
     %   k - 台站下方地壳平均Vp/Vs
     %   kstd - 台站下方地壳平均Vp/Vs误差估计
-    global Hall
-    global kappa
+    
+    % global Hall
+    % global kappa
 
     R = 6371; % radius of the Earth
     edep = 0;
@@ -325,88 +326,88 @@ function [HKresults, plotData] = HKstacking(DataStruct, app, Hall, kappa)
         
 %         disp(plotData)
         %% plot
-        fig1 = figure('Visible','off');
-        set(fig1,'Position',[500 500 1000 1000]);
-        imagesc(Hall,kappa,Cn');hold on;
-
-        textinfoh = ['Depth=',num2str(besth,'%4.1f'), setstr(177),num2str(hstd,'%2.1f'),' km'];
-        textinfok = [ 'Vp/Vs=',num2str(bestk,'%4.2f'),setstr(177),num2str(kstd,'%4.2f')];
-        scatter(besth,bestk,100,'white','x');hold off;
-        th = annotation('textbox','String',textinfoh,'Color','k','FontSize',24,'EdgeColor','none','BackgroundColor','w');
-        tk = annotation('textbox','String',textinfok,'Color','k','FontSize',24,'EdgeColor','none','BackgroundColor','w');
-        
-        set(th,'Position',[0.655 0.875 0.25 0.05])
-        set(tk,'Position',[0.655 0.825 0.25 0.05])
-
-        axis xy;
-        xlabel('Depth(km)','FontSize',24);
-        ylabel('Vp/Vs','FontSize',24);
-        title(sta,'FontSize',24);
-        set(gca,'FontSize',20);
-        % shape 0 value to while color
-        cmap = colormap(jet);
-        %cmap = [1 1 1; cmap];
-        colormap(cmap)
-        figname1 = ['./figures/HK/',sta,'_HK_raytracing.fig'];
-        figname = ['./figures/HK/',sta,'_HK_raytracing'];
-        saveas(fig1,figname,'png');
-        saveas(fig1,figname,'fig');
-        % export_fig(fig2,figname,'-png');
-
-        fig2 = figure('Visible','off');
-        set(fig2,'Position',[500 500 1000 1000]);
-        for id = length(dist):-1:1
-            % plot traces
-            x = seis(:,id)*30;
-            shift = dist(id);
-            p1 = plot(t,x+shift);hold on;
-            % fill in the color for positive phase
-            thre = 0.01;
-            upper = x; upper(upper<=thre) = 0;
-            upper(1) = 0; upper(end) = 0;
-            lower = zeros(length(x),1);
-            jbfill(t(:),upper+shift,lower+shift,'r','k',1,1.0);hold on;
-            
-            upper = zeros(length(x),1);
-            lower = x; lower(lower>=-thre)=0;
-            lower(1) = 0; lower(end) = 0;
-            jbfill(t(:),upper+shift,lower+shift,[0.17,0.17,0.17],'k',1,1.0);hold on;
-            xlim([-5,35]);
-            ylim([20,100]);
-            set(p1,'LineWidth',1)
-        end
-        H = besth; k = bestk;
-        for id = length(dist):-1:1
-            % mark the arrival time of major phases based on the calculated HK
-            % results
-            shift = dist(id);
-            p = rayp(id);
-            t0p1s = H * (sqrt( (k/vp_ave)^2 - p^2 ) - sqrt( (1/vp_ave)^2 - p^2 ));
-            t2p1s = H * (sqrt( (k/vp_ave)^2 - p^2 ) + sqrt( (1/vp_ave)^2 - p^2 ));
-            t1p2s = 2 * H * sqrt( (k/vp_ave)^2 - p^2 );
-            scatter(0,shift,40,'blue','filled');
-            scatter(t0p1s,shift,40,'black','filled');
-            scatter(t2p1s,shift,40,'black','filled');
-            scatter(t1p2s,shift,40,'black','filled');
-            t0p1s = Tdelay_Ps(indexh,id,indexk);
-            t2p1s = Tdelay_PpPms(indexh,id,indexk);
-            t1p2s = Tdelay_PpSms(indexh,id,indexk);
-            scatter(0,shift,40,'blue','filled');
-            scatter(t0p1s,shift,40,'blue','filled');
-            scatter(t2p1s,shift,40,'blue','filled');
-            scatter(t1p2s,shift,40,'blue','filled');
-        end
-        hold off;
-        title(sta,'FontSize',24);
-        xlabel('Time (sec)');
-        ylabel('Distance (deg)');
-        set(gca,'FontSize',20);
-        figname = ['./figures/HK/',sta,'_waveform'];
-        figname2 = ['./figures/HK/',sta,'_waveform.fig'];
-        saveas(fig2,figname,'fig');
-        saveas(fig2,figname,'png');
-
-        close all;
+        % fig1 = figure('Visible','off');
+        % set(fig1,'Position',[500 500 1000 1000]);
+        % imagesc(Hall,kappa,Cn');hold on;
+        % 
+        % textinfoh = ['Depth=',num2str(besth,'%4.1f'), setstr(177),num2str(hstd,'%2.1f'),' km'];
+        % textinfok = [ 'Vp/Vs=',num2str(bestk,'%4.2f'),setstr(177),num2str(kstd,'%4.2f')];
+        % scatter(besth,bestk,100,'white','x');hold off;
+        % th = annotation('textbox','String',textinfoh,'Color','k','FontSize',24,'EdgeColor','none','BackgroundColor','w');
+        % tk = annotation('textbox','String',textinfok,'Color','k','FontSize',24,'EdgeColor','none','BackgroundColor','w');
+        % 
+        % set(th,'Position',[0.655 0.875 0.25 0.05])
+        % set(tk,'Position',[0.655 0.825 0.25 0.05])
+        % 
+        % axis xy;
+        % xlabel('Depth(km)','FontSize',24);
+        % ylabel('Vp/Vs','FontSize',24);
+        % title(sta,'FontSize',24);
+        % set(gca,'FontSize',20);
+        % % shape 0 value to while color
+        % cmap = colormap(jet);
+        % %cmap = [1 1 1; cmap];
+        % colormap(cmap)
+        % figname1 = ['./figures/HK/',sta,'_HK_raytracing.fig'];
+        % figname = ['./figures/HK/',sta,'_HK_raytracing'];
+        % saveas(fig1,figname,'png');
+        % saveas(fig1,figname,'fig');
+        % % export_fig(fig2,figname,'-png');
+        % 
+        % fig2 = figure('Visible','off');
+        % set(fig2,'Position',[500 500 1000 1000]);
+        % for id = length(dist):-1:1
+        %     % plot traces
+        %     x = seis(:,id)*30;
+        %     shift = dist(id);
+        %     p1 = plot(t,x+shift);hold on;
+        %     % fill in the color for positive phase
+        %     thre = 0.01;
+        %     upper = x; upper(upper<=thre) = 0;
+        %     upper(1) = 0; upper(end) = 0;
+        %     lower = zeros(length(x),1);
+        %     jbfill(t(:),upper+shift,lower+shift,'r','k',1,1.0);hold on;
+        % 
+        %     upper = zeros(length(x),1);
+        %     lower = x; lower(lower>=-thre)=0;
+        %     lower(1) = 0; lower(end) = 0;
+        %     jbfill(t(:),upper+shift,lower+shift,[0.17,0.17,0.17],'k',1,1.0);hold on;
+        %     xlim([-5,35]);
+        %     ylim([20,100]);
+        %     set(p1,'LineWidth',1)
+        % end
+        % H = besth; k = bestk;
+        % for id = length(dist):-1:1
+        %     % mark the arrival time of major phases based on the calculated HK
+        %     % results
+        %     shift = dist(id);
+        %     p = Pflat(id);
+        %     t0p1s = H * (sqrt( (k/vp_ave)^2 - p^2 ) - sqrt( (1/vp_ave)^2 - p^2 ));
+        %     t2p1s = H * (sqrt( (k/vp_ave)^2 - p^2 ) + sqrt( (1/vp_ave)^2 - p^2 ));
+        %     t1p2s = 2 * H * sqrt( (k/vp_ave)^2 - p^2 );
+        %     scatter(0,shift,40,'blue','filled');
+        %     scatter(t0p1s,shift,40,'black','filled');
+        %     scatter(t2p1s,shift,40,'black','filled');
+        %     scatter(t1p2s,shift,40,'black','filled');
+        %     t0p1s = Tdelay_Ps(indexh,id,indexk);
+        %     t2p1s = Tdelay_PpPms(indexh,id,indexk);
+        %     t1p2s = Tdelay_PpSms(indexh,id,indexk);
+        %     scatter(0,shift,40,'blue','filled');
+        %     scatter(t0p1s,shift,40,'blue','filled');
+        %     scatter(t2p1s,shift,40,'blue','filled');
+        %     scatter(t1p2s,shift,40,'blue','filled');
+        % end
+        % hold off;
+        % title(sta,'FontSize',24);
+        % xlabel('Time (sec)');
+        % ylabel('Distance (deg)');
+        % set(gca,'FontSize',20);
+        % figname = ['./figures/HK/',sta,'_waveform'];
+        % figname2 = ['./figures/HK/',sta,'_waveform.fig'];
+        % saveas(fig2,figname,'fig');
+        % saveas(fig2,figname,'png');
+        % 
+        % close all;
     end
     
     if if_print_result == 1

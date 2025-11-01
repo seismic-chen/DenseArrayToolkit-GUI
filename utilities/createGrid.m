@@ -4,6 +4,9 @@ if nargin <= 4
     zmax = 100;
     xpad = 3*dx;
     ypad = 3*dy;
+elseif nargin == 5
+    xpad = 3*dx;
+    ypad = 3*dy;
 end
 % 从数据结构中提取台站信息
 stationList = getStations(DataStruct);
