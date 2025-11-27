@@ -16,7 +16,7 @@ config.PreprocessingParam.resample_period = 0.1;   % resample period (sec)
 
 %% 2. Deconvolution parameters
 config.DeconvParam = struct();
-config.DeconvParam.gauss       = 5.0;    % Gaussian parameter for deconvolution
+config.DeconvParam.gauss       = 2.5;    % Gaussian parameter for deconvolution
 config.DeconvParam.waterlevel  = 0.01;   % water-level parameter for deconvolution
 config.DeconvParam.itmax       = 100;    % maximum number of iterations for deconvolution
 config.DeconvParam.minderr     = 1e-5;   % minimum error for deconvolution

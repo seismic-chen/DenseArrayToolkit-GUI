@@ -116,12 +116,13 @@ function plotCommonEventGather(DataStruct, EventID, axis_type, plot_type, UIAxes
             xlim(ax,[min(xrange) max(xrange)])
         case 'imagesc'
             imagesc(xrange,t,rfmatrix,'Parent', ax);
-            colormap(ax,seismic(1))
-            caxis(ax,[-0.1 0.1])
+            % colormap(ax,seismic(1))
+            colormap(ax,'gray')
+            clim(ax,[-0.1 0.1])
             xlabel(ax, xlabelstr);
             xlim(ax,[min(xrange) max(xrange)])
     end
-    ylim(ax, [t(1), 20]);    % 只显示 0~20s 区间，可按需调整
+    ylim(ax, [t(1), 20]);    
     set(ax,'YDir','reverse')
     ylabel(ax, 'Time (sec)');
     set(ax, 'FontSize',14, 'LineWidth',1, 'XMinorTick','on');

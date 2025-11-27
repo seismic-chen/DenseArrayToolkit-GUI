@@ -29,7 +29,7 @@ function [rfshift,src_func,mask] = shiftRFs(rf0,take_off,back_az,xo,yo,x,y,rx,ry
         rfshift = zeros(nt,nx,ny);
         [rftmp,~] = doBinning(rf1, rx, ry, x, y, nx,ny, dx, dy);
     end
-    
+ 
     %% generate plane wave
     dsrc = genPlaneWave(src_func,take_off,back_az,xo,yo,x,y,vp,nt,dt,src_type,fpeak);
     
@@ -65,10 +65,10 @@ function [rfshift,src_func,mask] = shiftRFs(rf0,take_off,back_az,xo,yo,x,y,rx,ry
     
     %% plot
     if isplot
-        xtrace = 11;
-        itrf = it - 10;   % previous to P 10s
+        xtrace = 15;
+        itrf = it - 5;   % previous to P 10s
         tb = round(5/dt);
-        tl = round(50/dt);
+        tl = round(60/dt);
         rfplot = rfshift0(:,:,xtrace);
         xprof = rfshift(:,:,xtrace);
         
@@ -76,7 +76,7 @@ function [rfshift,src_func,mask] = shiftRFs(rf0,take_off,back_az,xo,yo,x,y,rx,ry
         set(gcf,'position',[100 100 1000 400],'color','white')
         subplot(121)
         wigb(rfplot(tb:tl,:),0.8,x,itrf(tb:tl))
-        title('shifted RFs')
+        title('shifted RFs (Binned)')
         xlabel('Distance (km)');
         ylabel('Time (s)');
         set(gca,'fontsize',18);

@@ -16,9 +16,10 @@ function gauss = gaussFilter( dt, nft, f0 )
 % the units of the filter are 1/s
 
 df = 1.0/(nft*dt);
-nft21 = 0.5*nft + 1;
+nft21 = floor(0.5*nft) + 1;
 
 % get frequencies
+
 f = df*(0:1:nft21-1);
 
 w = 2*pi*f;
@@ -27,6 +28,11 @@ w = 2*pi*f;
 gauss = zeros(1,nft);
 gauss(1:nft21) = exp( - 0.25*(w/f0).^2 )/dt;
 %gauss(1:nft21) = exp( - pi*(f/f0).^2 )/dt;
-gauss(nft21+1:end) = fliplr(gauss(2:nft21-1));
+% gauss(nft21+1:end) = fliplr(gauss(2:nft21-1));
+if mod(nft, 2) == 0
+    gauss(nft21+1:end) = fliplr(gauss(2:nft21-1));
+else
+    gauss(nft21+1:end) = fliplr(gauss(2:nft21));
+end
 
 return

@@ -20,6 +20,7 @@ function [lsmig,pre_rf] = runLSM(rfshift,take_off,back_az,src_func,save_wavefiel
     
     src_type = param.src_type;
     fpeak = param.fpeak;
+    mu = param.mu;
     % to predict rf
     ispred = param.ispred;
     
@@ -48,7 +49,7 @@ function [lsmig,pre_rf] = runLSM(rfshift,take_off,back_az,src_func,save_wavefiel
     din = rfshift(:);
     S = repmat(any(rfshift),size(rfshift,1),1);
     S = S(:);
-    mu = 0.1;
+    
     if_cg = 1;
     P = @(u) precon_x_3d(u,nx,ny,nz,dx,dy,dz);
     Pt= @(d) preconT_x_3d(d,nx,ny,nz,dx,dy,dz);
