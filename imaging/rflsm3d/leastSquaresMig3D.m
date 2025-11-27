@@ -20,15 +20,14 @@ if ~isfield(param,'binning') || ~isfield(param.binning,'dx')
     % If binning not given, default to gridStruct.dx
     param.binning = gridStruct;
 end
-if ~isfield(param,'itermax'), param.itermax = 20; end
-if ~isfield(param,'mu'),      param.mu = 0.1;     end
-if ~isfield(param,'xpad'),    param.xpad = 0;     end
-if ~isfield(param,'plotMig'), param.plotMig = false;    end
+% if ~isfield(param,'itermax'), param.itermax = 20; end
+% if ~isfield(param,'mu'),      param.mu = 0.1;     end
+% if ~isfield(param,'xpad'),    param.xpad = 0;     end
+% if ~isfield(param,'plotMig'), param.plotMig = false;    end
 % Display some gather info if present
 if isfield(gather(1), 'EventInfo') && isfield(gather(1).EventInfo, 'evid')
     disp(['[leastSquaresMig] Processing event: ' gather(1).EventInfo.evid]);
 end
-
 
 %% ------------------------------------------------------------------------
 %  (2) Extract trace data from gather (RF data and geometry)
@@ -92,7 +91,7 @@ save_wavefield = 0;
 [mig,pre_rfm] = runMigration(rfshift,take_off,back_azimuth,src_func,save_wavefield,gridStruct,param);
 
 %% LSM
-itermax = 15;
+itermax = param.paramMig.itermax;
 save_wavefield = 0;
 [lsmig,pre_rflsm] = runLSM(rfshift,take_off,back_azimuth,src_func,save_wavefield,itermax,gridStruct,param);
 

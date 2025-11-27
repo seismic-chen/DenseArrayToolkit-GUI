@@ -43,7 +43,7 @@ if ~isfield(param,'niter'),  param.niter  = 20; end
 if ~isfield(param,'eps'),    param.eps    = 1e-3; end
 if ~isfield(param,'verb'),   param.verb   = true; end
 if ~isfield(param,'mode'),   param.mode   = 1; end
-if ~isfield(param,'tmax'),   param.tmax   = 30; end
+if ~isfield(param,'tmax'),   param.tmax   = 60; end
 if ~isfield(param,'plotRankReduction'),   param.plotRankReduction   = false; end
 
 
