@@ -76,29 +76,39 @@ function consistent_earthquakes = filter_earthquakes_by_azimuth(slon, slat, elon
 %   - 'eqdazim': Azimuthal Equidistant
 %   Here we choose Lambert to preserve area, or eqdazim to preserve distance.
 
-figure('Position',[10 10 800 800],'Name','Selected events','Color','w');
+figure('Position',[100 100 700 700], 'Name','Global station–event map', 'Color','w');
+lat0 = mean(station_data(:,2));
+lon0 = mean(station_data(:,1)); 
+ax = axesm('ortho', 'Origin',[lat0 lon0 0], ...
+           'Frame','on', 'Grid','on', 'MeridianLabel','on', 'ParallelLabel','on');
+axis off;tightmap;
 
-% Create map axes with Lambert Azimuthal (good for polar or local region).
-% 'origin' sets the center of projection as [Lat, Lon]
-%   The first two elements of origin are the lat & lon of the center,
-%   the third element can be the rotation, usually 0.
-% axesm('MapProjection','lambertstd','MapLatLimit',[0 90],...
-%       'Origin',[stationLat stationLon 0]);
+load topo
+topo_shift = topo(:, [181:360 1:180]);
+nlat = size(topo_shift,1);
+nlon = size(topo_shift,2);
+lat  = linspace(-90, 90,  nlat);
+lon  = linspace(-180,180, nlon);
+[lonGrid, latGrid] = meshgrid(lon, lat);
+hTopo = surfm(latGrid, lonGrid, topo_shift);
+set(hTopo, 'EdgeColor','none', 'FaceAlpha',0.3);         % 背景透明度 (0~1)
+demcmap(turbo); clim([-8000 8000])
 
-% 若想用等距方位投影:
-axesm('eqdazim','MapLatLimit',[0 90], 'Origin',[mean_station(2) mean_station(1) 0]);
+coast = load('coastlines.mat');
+geoshow(coast.coastlat, coast.coastlon, 'DisplayType','line', 'Color','k', 'LineWidth',1);
 
-% 打开格网、边框、标签
-gridm('on');   % 绘制经纬网
-mlabel('on');  % 纬度标注
-plabel('on');  % 经度标注
-framem('on');  % 地图框
+hold on;
+plotm(station_data(:,2), station_data(:,1), ...
+      'b^', 'MarkerFaceColor','b', 'MarkerSize',8, 'DisplayName','Stations');
 
-plotm(station_data(:, 2), station_data(:, 1), 'bo', 'DisplayName', '台站位置'); hold on;
+scatterm(earthquake_data(:,2), earthquake_data(:,1), ...
+         500, 'pk', 'filled', 'DisplayName','Earthquakes');
 
-scatterm(earthquake_data(:, 2), earthquake_data(:, 1), 200, 'k','p','filled','MarkerEdgeColor','k','DisplayName', '地震位置');
-scatterm(earthquake_data(consistent_earthquakes, 2), earthquake_data(consistent_earthquakes, 1), 200, 'r','p','filled','MarkerEdgeColor','k','DisplayName', '与测线一致的地震');
-coast = load('coastlines.mat');  % coast.coastlat, coast.coastlon
-geoshow(coast.coastlat, coast.coastlon, ...
-        'DisplayType','line','Color','k','LineWidth',1);
+scatterm(earthquake_data(consistent_earthquakes,2), ...
+         earthquake_data(consistent_earthquakes,1), ...
+         800, 'pr', 'filled', 'DisplayName','Profile events');
+
+
 end
+
+

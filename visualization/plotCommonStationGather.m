@@ -11,7 +11,7 @@ function plotCommonStationGather(DataStruct, station)
     
     % 若没有找到对应的台站数据，可以给出警告/提示
     if isempty(idx)
-        warning('未找到名为 %s 的台站数据！', station);
+        warning('Station: %s not found！', station);
         return;
     end
 
@@ -20,7 +20,7 @@ function plotCommonStationGather(DataStruct, station)
     figPosition    = [500 500 600 1200];
     scaling_factor = 10;       % 纵向放大倍数
     thr            = 0.01;     % 阈值
-    timeRange      = [0, 30];  % 横坐标时间范围
+    timeRange      = [-5, 30];  % 横坐标时间范围
     distRange      = [25,100]; % 纵坐标距离范围
     
     %========== 创建图形与基本设置 ==========
@@ -36,7 +36,7 @@ function plotCommonStationGather(DataStruct, station)
         dist = DataStruct(n).TravelInfo.distDeg;
 
         % 1) 绘制原始波形
-        p = plot(t, x + dist, 'k', 'LineWidth', 0.7);
+        p = plot(t, x + dist, 'k', 'LineWidth', 1.5);
 
         % 2) 正极性部分着色
         fillPositive(t, x, dist, thr); hold on;
@@ -51,7 +51,8 @@ function plotCommonStationGather(DataStruct, station)
     ylim(distRange);
     xlabel('Time (sec)');
     ylabel('Distance (deg)');
-    set(gca, 'FontSize', 14);
+    box on
+    set(gca, 'FontSize', 18,'linewidth',1.5);
 end
 
 %===================== 辅助函数：正极性填充 =====================%
@@ -64,8 +65,6 @@ function fillPositive(t, x, dist, thr)
     
     lower = zeros(size(x));
     
-    % jbfill 的参数含义(根据版本可能略有差异)：
-    % jbfill(x轴, 上边界, 下边界, 面颜色, 边框颜色, 填充方式，透明度)
     jbfill(t, upper + dist, lower + dist, 'r', 'none', 1, 0.5);
 end
 

@@ -27,12 +27,21 @@ function plotCommonEventGather(DataStruct, EventID, axis_type, plot_type, UIAxes
     end
 
     if nargin < 2 || isempty(EventID)
-        % 如果没有提供 EventID，则绘制所有波形
         EventID = 'all';
     end
 
+    stmn = {};
+    for i = 1:numel(DataStruct)
+        stmn{i} = [DataStruct(i).StationInfo.sta];
+    end
+    nsta = length(sort(unique(stmn)));
+    stnet = strsplit(stmn{1});
+    if strcmp(stnet{1}(1:2),'SL')==1
+        nsta = nsta+3;
+    end
+
     %% 2) 收集满足条件的 RF 波形
-    rfmatrix = [];
+    rfmatrix = zeros(length(DataStruct(1).RF.itr),nsta);
     distArr  = [];
     foundIndices = [];
 
@@ -51,28 +60,35 @@ function plotCommonEventGather(DataStruct, EventID, axis_type, plot_type, UIAxes
     end
 
     for idx = foundIndices
-        % 确保 RF.itr 存在且非空
         if isfield(DataStruct(idx), 'RF') && isfield(DataStruct(idx).RF,'itr') ...
                 && ~isempty(DataStruct(idx).RF.itr)
-            rfmatrix(:, end+1) = DataStruct(idx).RF.itr;          % [Nt x 1] -> add as new column
+                      % [Nt x 1] -> add as new column
+            stanm = DataStruct(idx).StationInfo.sta;
+            tmp = str2double(strsplit(stanm,stanm(1:2)));
+            stanum = tmp(2);
+            rfmatrix(:, stanum) = DataStruct(idx).RF.itr;
+
         else
-            % 若这个记录没有 RF.itr, 跳过
             continue;
         end
 
         if isfield(DataStruct(idx), 'TravelInfo') && isfield(DataStruct(idx).TravelInfo, 'distDeg')
             distArr(end+1) = DataStruct(idx).TravelInfo.distDeg; % distance in deg
         else
-            distArr(end+1) = NaN;  % 或者赋予一个默认值
+            distArr(end+1) = NaN;  
         end
     end
 
-    % 若最终 rfmatrix 为空, 说明虽然找到匹配事件, 但没有有效RF波形
     if isempty(rfmatrix)
         warning('Found %d records, but none has valid RF.itr data.', ...
                  numel(foundIndices));
         return;
     end
+
+    if strcmp(stnet{1}(1:2),'SL')==1
+        rfmatrix = fliplr(rfmatrix);
+    end
+
 
     %% 3) 确定时间轴
     %   从第一个有 RF.ittime 的记录中获取
@@ -84,14 +100,12 @@ function plotCommonEventGather(DataStruct, EventID, axis_type, plot_type, UIAxes
         warning('No valid time axis (RF.ittime) found in the first matched record.');
         return;
     end
-
-    [nt, nx] = size(rfmatrix);
-    
+   
     %% 4) 作图
     if nargin < 5 || isempty(UIAxes)
         % 如果没有提供 UIAxes，则新建一个 figure
         figure('Name',sprintf('RF for %s',EventID),'Color','white',...
-               'Position',[200 200 1200 700]);
+               'Position',[10 10 900 350]);
         ax = gca;
     else
         % 如果提供了 UIAxes，则在该 Axes 中画图
@@ -106,8 +120,8 @@ function plotCommonEventGather(DataStruct, EventID, axis_type, plot_type, UIAxes
             xrange = distArr;
             xlabelstr = 'Distance (deg)';
         case 'trace'
-            xrange = 1:nx;
-            xlabelstr = 'Trace index';  
+            xrange = 1:nsta;
+            xlabelstr = '# of station';  
     end
     switch plot_type
         case 'wigb'
@@ -125,11 +139,12 @@ function plotCommonEventGather(DataStruct, EventID, axis_type, plot_type, UIAxes
     ylim(ax, [t(1), 20]);    
     set(ax,'YDir','reverse')
     ylabel(ax, 'Time (sec)');
-    set(ax, 'FontSize',14, 'LineWidth',1, 'XMinorTick','on');
+    title(ax,['RF (ID: ',EventID,')'])
+    set(ax, 'FontSize',18, 'LineWidth',1.5, 'XMinorTick','on');
 
     if strcmp(EventID, 'all')
         title(ax, sprintf('All Events : showing %d station(s)', size(rfmatrix,2)));
     else
-        title(ax, sprintf('Event %s : showing %d station(s)', EventID, size(rfmatrix,2)));
+        % title(ax, sprintf('Event %s : showing %d station(s)', EventID, size(rfmatrix,2)));
     end
 end

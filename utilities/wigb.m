@@ -70,9 +70,9 @@ set(gca,'NextPlot','add','Box','on', ...
 
 
 
-fillcolor = [0 0 0];
-linecolor = [0 0 0];
-linewidth = 1.;
+fillcolor = [1.0 0.0 0.0];
+linecolor = [0.3 0.3 0.3];
+linewidth = 0.8;
 
 z=z'; 	% input as row vector
 zstart=z(1);

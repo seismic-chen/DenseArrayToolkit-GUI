@@ -1,4 +1,4 @@
-function gridStruct = getVelocityModel(ModelType, gridStruct, npts)
+function gridStruct = getVelocityModel(ModelType, gridStruct, xnpts,ynpts)
 %GETVELOCITYMODEL Generate velocity model based on specified type and parameters
 %
 % Inputs:
@@ -34,17 +34,17 @@ X = []; Y = []; Z = []; VP = []; VS = [];
 knode = 0;
 
 % Create lat/lon grid for interpolation
-latall = linspace(LatMin, LatMax, npts);
-lonall = linspace(LonMin, LonMax, npts);
+lonall = linspace(LonMin, LonMax, xnpts);
+latall = linspace(LatMin, LatMax, ynpts);
 
-vpgrid = zeros(zmax/dz,npts,npts);
-vsgrid = zeros(zmax/dz,npts,npts);
+vpgrid = zeros(zmax/dz,xnpts,ynpts);
+vsgrid = zeros(zmax/dz,xnpts,ynpts);
 
 % Loop through each grid point to build 3D model
 for i = 1:length(latall)
     for j = 1:length(lonall)
         knode = knode + 1;
-        disp(['Processing node ', num2str(knode), ' of ', num2str(npts*npts)]);
+        disp(['Processing node ', num2str(knode), ' of ', num2str(xnpts*ynpts)]);
 
         % Get velocity model at current location
         lat = latall(i);

@@ -163,11 +163,11 @@ secondaryAxisLatLon = [tmplon,tmplat];
 
 % 绘制图形
 figure;
-set(gcf,'Position',[0 0 1000 1000],'Color','w')
+set(gcf,'Position',[0 0 700 700],'Color','w')
 hold on;
 
 % 绘制台站的位置
-scatter(stationX, stationY, 'r^', 'filled', 'DisplayName', 'Stations');
+scatter(stationX, stationY, 50,'r^', 'filled', 'DisplayName', 'Stations');
 scatter(rxInOriginalCoord(:,1),rxInOriginalCoord(:,2),'b^','DisplayName','Projected X location')
 scatter(ryInOriginalCoord(:,1),ryInOriginalCoord(:,2),'g^','DisplayName','Projected Y location')
 
@@ -176,22 +176,19 @@ scatter(ryInOriginalCoord(:,1),ryInOriginalCoord(:,2),'g^','DisplayName','Projec
 %     'MaxHeadSize', 2, 'LineWidth', 2, 'Color', 'b', 'DisplayName', 'Principal Axis');
 % quiver(mean(gridPointsInOriginalCoord(:,1)), mean(gridPointsInOriginalCoord(:,2)), (y_max-y_min)/2*secondary_axis(1), (y_max-y_min)/2*secondary_axis(2), ...
 %     'MaxHeadSize', 2, 'LineWidth', 2, 'Color', 'g', 'DisplayName', 'Secondary Axis');
-plot(principleAxisInOriginalCoord(:,1),principleAxisInOriginalCoord(:,2),'b','linewidth',2,'DisplayName', 'Principal Axis')
-plot(secondaryAxisInOriginalCoord(:,1),secondaryAxisInOriginalCoord(:,2),'g','linewidth',2,'DisplayName', 'Secondary Axis')
+plot(principleAxisInOriginalCoord(:,1),principleAxisInOriginalCoord(:,2),'b','linewidth',1,'DisplayName', 'Principal Axis','LineStyle','--')
+plot(secondaryAxisInOriginalCoord(:,1),secondaryAxisInOriginalCoord(:,2),'g','linewidth',1,'DisplayName', 'Secondary Axis','LineStyle','--')
 
 % 绘制网格点的位置
-scatter(XInOriginalCoord(:), YInOriginalCoord(:), 10, 'k', 'filled', ...
+scatter(XInOriginalCoord(:), YInOriginalCoord(:), 50, 'k', 'filled', ...
     'DisplayName', 'Grid Points');
-
 % 设置图形
-xlabel('X (km)');
-ylabel('Y (km)');
+xlabel('Easting (km)');ylabel('Northing (km)');
 legend('show','Location','best');
-axis equal;
-grid on;
-title('Station Positions, PCA Axes, and Grid Points in Original Coordinate System');
+axis equal;grid on;box on
+title('Regular meshgrid map');
 hold off;
-set(gca,'fontsize',14)
+set(gca,'fontsize',18,'linewidth',1.5)
 % construct depth axis
 z = 0:dz:zmax;
 nz = length(z);

@@ -45,41 +45,41 @@ disp('Migration done')
 
 % plot results
 % figdir = param.figdir;
-fig=figure;
-set(gcf,'Position',[100 100 1800 600],'color','w')
-subplot(131)
-imagesc(x,t, reshape(d/max(d(:)),nt,nx));
-xlim([0 xmax])
-xlabel('Distance (km)');
-ylabel('Time (sec)');
-title('Time-shifted RF')
-set(gca,'fontsize',14)
-colorbar
-caxis([-1 1]);
-text(-0.2,0.98,'(a)','Units','normalized','FontSize',18)
-
-subplot(132)
-imagesc(x,z, mean(mig,3)); hold on;
-xlim([0 xmax])
-colormap(seismic(3));
-xlabel('Distance (km)');
-ylabel('Depth (km)');
-title('Migration image')
-set(gca,'fontsize',14)
-colorbar
-cmax=rms(abs(mig(:)));
-caxis([-3*cmax 3*cmax]);
-text(-0.2,0.98,'(b)','Units','normalized','FontSize',18)
-
-subplot(133)
-imagesc(x,t, reshape(dp/max(dp(:)),nt,nx));
-xlim([0 xmax])
-colorbar
-caxis([-1 1]);
-xlabel('Distance (km)');
-ylabel('Depth (km)');
-title('Predicted data')
-set(gca,'fontsize',14)
-text(-0.2,0.98,'(c)','Units','normalized','FontSize',18)
+% fig=figure;
+% set(gcf,'Position',[100 100 1800 600],'color','w')
+% subplot(131)
+% imagesc(x,t, reshape(d/max(d(:)),nt,nx));
+% xlim([0 xmax])
+% xlabel('Distance (km)');
+% ylabel('Time (sec)');
+% title('Time-shifted RF')
+% set(gca,'fontsize',14)
+% colorbar
+% caxis([-1 1]);
+% text(-0.2,0.98,'(a)','Units','normalized','FontSize',18)
+% 
+% subplot(132)
+% imagesc(x,z, mean(mig,3)); hold on;
+% xlim([0 xmax])
+% colormap(seismic(3));
+% xlabel('Distance (km)');
+% ylabel('Depth (km)');
+% title('Migration image')
+% set(gca,'fontsize',14)
+% colorbar
+% cmax=rms(abs(mig(:)));
+% caxis([-3*cmax 3*cmax]);
+% text(-0.2,0.98,'(b)','Units','normalized','FontSize',18)
+% 
+% subplot(133)
+% imagesc(x,t, reshape(dp/max(dp(:)),nt,nx));
+% xlim([0 xmax])
+% colorbar
+% caxis([-1 1]);
+% xlabel('Distance (km)');
+% ylabel('Depth (km)');
+% title('Predicted data')
+% set(gca,'fontsize',14)
+% text(-0.2,0.98,'(c)','Units','normalized','FontSize',18)
 % figname=['mig.',num2str(ishot),'.png'];
 % export_fig(fig,fullfile(figdir,figname));

@@ -34,27 +34,27 @@ function [HKresults, plotData] = HKstacking(DataStruct, app, Hall, kappa)
     for n = 1:nsta
         gather = getCommonStationGather(DataStruct, stationList{n});
         if isempty(gather)
-            continue;  % 跳过空数据
+            continue; 
         end
     end
 
-    % 初始化结构体数组
+
     HKresults = struct('Sta', [],'Nrfs', [],'Lat', [],'Lon', [],'Ele', [],'H', [],'Hstd', [],'k', [],'kstd', []);
 %     plotData = struct('Hall', {}, 'kappa', {}, 'Cn', {}, 'besth', {}, 'bestk', {}, 'hstd', {}, 'kstd', {});  % 用于保存绘图数据的结构体
     plotData = repmat(struct('Hall',[],'kappa',[],'Cn',[],'besth',[],'bestk',[],'hstd',[],'kstd',[],...
                               't',[],'seis',[],'dist',[],'rayp',[],'Tdelay_Ps',[], ...
                               'Tdelay_PpPms',[],'Tdelay_PpSms',[], 'vp_ave',[], 'indexh',[], 'indexk',[]), 1, n);%indexh,indexk
     for n = 1:length(stationList)
-        % 允许 UI 更新，检测用户是否按下停止按钮
+
         drawnow;  
         if app.StopFlag
-            % 如果停止标志为 true，则退出循环
-            disp(['计算在第 ', num2str(n), ' 个台站时被停止。']);
+            
+            disp(['No. ', num2str(n), '  stopped!']);
             break;
         end
         gather = getCommonStationGather(DataStruct, stationList{n});
         if isempty(gather)
-            continue;  % 跳过空数据
+            continue;  
         end
         seis=[];rayp=[];dist=[];
         net = gather(1).StationInfo.network;

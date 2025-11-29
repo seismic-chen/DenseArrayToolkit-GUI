@@ -1,10 +1,10 @@
-function [src,pos,tshift] = rflsm_create_src(dt,nfft,rayp,baz,vp,param)
+function [src,pos,tshift] = rflsm_create_src(dt,nfft,rayp,incidence_direction,vp,param)
 % This function creates source time function required by migration.
 % 
 % input:      dt -- time interval
 %             nfft -- number of data points
 %             rayp -- ray parameter in s/km
-%             baz -- back-azimuth
+%             incidence_direction -- incidence direction of wavefield
 %             vp -- P-wave velocity at the bottom of the model
 %             param -- struct contains the parameters for radon transform
 % output:     src -- source time function
@@ -13,6 +13,8 @@ function [src,pos,tshift] = rflsm_create_src(dt,nfft,rayp,baz,vp,param)
 %             
 % August, 2024, Yunfeng Chen, write the function
 % get filter in F domain 
+
+% Nov. 27, 2025, same as command version
 gauss = param.gauss;
 ph = param.phaseshift;
 nx = param.binning.nx;
@@ -40,20 +42,17 @@ pos{1} = linspace(0,len,nx);
 
 % calcualte the amount of time shift
 rayp=rayp*rad2km(1);
-theta= -asind(rayp*vp/(6371-zmax)); % incidence angle
+theta= asind(rayp*vp/(6371-zmax)); % incidence angle
 
-% This part of the code is kind of ad-hoc and is used to determine the
-% incidence direction. You have to set the azimuth range properly based on
-% your own dataset.
-if baz<=360 && baz>=180
-    theta=-theta;
-end
+% incidence direction is 1 if wavefield is propagating towards the
+% positive direction of the profile and -1 otherwise
+theta = theta * incidence_direction;
 
-tmax=tand(theta)*len/mean(vp);
+% sin lead to the right depth
+tmax=sind(theta)*len/mean(vp);
+
 if tmax<0
     tshift=linspace(abs(tmax),0,nx);
 else
     tshift=linspace(0,abs(tmax),nx);
 end
-
-

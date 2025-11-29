@@ -1,4 +1,4 @@
-function [gather, d1_otg] = rankReduction_new(gather, gridStruct, param)
+function [gather, dout_recon_regular] = rankReduction_new(gather, gridStruct, param)
 % RANKREDUCTION - Do rank reduction (DRR-OTG) on gather data in 3D (time x x-dist x y-dist)
 %
 % Usage:
@@ -40,12 +40,11 @@ if ~isfield(param,'fhigh'),  param.fhigh  = 1.2; end
 if ~isfield(param,'rank'),   param.rank   = 10; end
 if ~isfield(param,'K'),      param.K      = 5;  end
 if ~isfield(param,'niter'),  param.niter  = 20; end
-if ~isfield(param,'eps'),    param.eps    = 1e-3; end
+if ~isfield(param,'eps'),    param.eps    = 1e-5; end
 if ~isfield(param,'verb'),   param.verb   = true; end
 if ~isfield(param,'mode'),   param.mode   = 1; end
 if ~isfield(param,'tmax'),   param.tmax   = 60; end
 if ~isfield(param,'plotRankReduction'),   param.plotRankReduction   = false; end
-
 
 %% 1. Get station info
 stationList = getStations(gather);
@@ -89,7 +88,8 @@ d0 = cell2mat(cellfun(@(rf) rf.itr(idxT), itrCell,'UniformOutput', false));
 
 %% 5. DRR-OTG reconstruction
 % call drr3drecon_otg
-[d1_otg, d1] = drr3drecon_otg(...
+% d1_otg: regular; d1: original grid
+[dout_recon_regular, dout_recon_otg] = drr3drecon_otg(...
     d0, rx, ry, ...
     param.nx, param.ny, ...
     param.ox, param.oy, param.mx, param.my, ...
@@ -102,23 +102,23 @@ d0 = cell2mat(cellfun(@(rf) rf.itr(idxT), itrCell,'UniformOutput', false));
 % If so, we do:
 validIdx = find(validMask);
 
-if size(d1,2) ~= length(validIdx)
+if size(dout_recon_otg,2) ~= length(validIdx)
     warning('rankReduction:SizeMismatch', ...
        'd1 has %d columns but validIdx length = %d. Some gather traces not updated.', ...
-        size(d1,2), length(validIdx));
+        size(dout_recon_otg,2), length(validIdx));
 end
 
 for k = 1:length(validIdx)
     col = k;  % The column in d1
     gInd = validIdx(k);
-    if col <= size(d1,2)
-        gather(gInd).RF.itr    = d1(:, col);  % [Nt], reconstructed
+    if col <= size(dout_recon_otg,2)
+        gather(gInd).RF.itr    = dout_recon_otg(:, col);  % [Nt], reconstructed
         gather(gInd).RF.ittime = t;          % new time axis
     end
 end
 
 if param.plotRankReduction
-    figure; imagesc(1:length(gather)*2,t,[d0 d1])
+    figure; imagesc(1:length(gather)*2,t,[d0 dout_recon_otg])
     caxis([-0.1 0.1])
     colormap(seismic(3))
 end

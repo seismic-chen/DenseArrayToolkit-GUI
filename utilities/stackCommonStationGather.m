@@ -10,13 +10,24 @@ function [seisout, depth0, mohoStruct] = stackCommonStationGather(DataStruct)
     %   mohoStruct - 包含莫霍面深度信息的结构体
 
     % 1) 获取台站列表
+    load('./visualization/colormap/roma.mat')
     station = getStations(DataStruct); 
     stationList = {station.sta};
+    stla = [station.stla]; stlo = [station.stlo];
     nsta = length(stationList);
+    arraytype = station(1).network;
+    if strcmp(arraytype , 'SL')==1
+        load('./visualization/SichuanLongmenshan.mat');
+    elseif strcmp(arraytype , 'BY') == 1
+        load('./visualization/Baiyanebo_DEM.mat');
+    end
+
+    F = scatteredInterpolant(demLon(:), demLat(:), demZ(:), 'nearest');
+    staelev = F(stlo, stla)/1000;
 
     % 2) 预分配数组
     [seisCell, pArr, stlas, stlos] = initializeArrays(nsta);
-
+    
     % 3) 加载速度模型
     [z, ~, vp, vs] = loadVelocityModel();
     zmax = 100; dz = 0.5;  % 深度范围和采样间隔
@@ -51,10 +62,10 @@ function [seisout, depth0, mohoStruct] = stackCommonStationGather(DataStruct)
     [Fmoho, idx] = interpolateMohoDepth(stlas, stlos, dmoho);
 
     % 9) 绘制莫霍面深度图
-    plotMohoMap(stlas, stlos, dmoho, Fmoho);
+    plotMohoMap(arraytype,stlas, stlos, dmoho, Fmoho);
 
     % 10) 绘制叠加剖面
-    plotStackedSection(seisout, depth0, dmoho);
+    plotStackedSection(arraytype,seisout, depth0, dmoho, staelev,roma);
 
     % 11) 输出结果
     mohoStruct = createMohoStruct(stlas, stlos, dmoho, amoho);
@@ -103,20 +114,50 @@ function seisout = smoothSeismicData(seisCell,ngrid_x,ngrid_y)
 end
 
 %% 子函数：绘制叠加剖面
-function plotStackedSection(seisout, depth0, dmoho)
-    figure('Name', 'Stacked RF section', 'Color', 'w', 'Position',[10 10 800 400]);
+function plotStackedSection(arraytype,seisout, depth0, dmoho, staelev,roma)
+    if arraytype == 'SL'
+        seisout = fliplr(seisout);
+        dmoho = fliplr(dmoho');
+        staelev = fliplr(staelev);
+
+        
+    elseif arraytype == 'BY'
+
+    else
+
+    end
+    f1 = figure('Name', 'Stacked RF section', 'Color', 'w', 'Position',[10 10 800 450]);
+    axRF = axes('Parent',f1,'Position', [0.1 0.12 0.75 0.6]);
+    rf_pos = axRF.Position;
     imagesc(1:size(seisout, 2), depth0, seisout); hold on;
-    colormap(seismic(1)); caxis([-0.05 0.05]);
-    plot(1:size(seisout, 2),dmoho,'r--'); hold off;
-    ylim([0 100]);
-    xlabel('Station index'); ylabel('Depth (km)');
-    colorbar;
-    set(gca,'fontsize',14)
+    colormap(flipud(roma)); clim([-0.05 0.05]);
+    plot(1:size(seisout, 2), dmoho, 'r--', 'LineWidth', 0.8); hold off;
+    ylim([0 100]);xlim([0 size(seisout, 2)])
+    ylabel('Depth (km)');xlabel('# of station')
+    set(axRF, 'FontSize', 18,'LineWidth',1.5)
+    title(axRF, 'Stacked RFs');
+
+    c = colorbar(axRF,'Location','eastoutside');
+    c.Position(1) = rf_pos(1) + rf_pos(3) + 0.01;
+    c.Position(2) = rf_pos(2);
+    c.Position(3) = 0.02;   c.Position(4) = rf_pos(4);
+
+    axRF.Position = rf_pos;
+    gap   = 0.08;  hTop  = 0.18;
+    yTop  = rf_pos(2) + rf_pos(4) + gap;
+
+    axElev = axes('Parent',f1,'Position', [rf_pos(1) yTop rf_pos(3) hTop]);
+    plot(1:size(seisout, 2), staelev, 'b-', 'LineWidth', 2);
+    xlim([0 size(seisout, 2)]);ylim([0 5])
+    grid on; box on;
+    xlabel('Station index'); ylabel('Elev. (km)');
+    axElev.XTickLabel = [];   axElev.XLabel.String = '';
+    set(axElev,'FontSize',18,'LineWidth',1.5);
+    linkaxes([axRF, axElev], 'x');
 end
 
-%% 子函数：提取莫霍面深度
 function [dmoho, amoho] = extractMohoDepth(seisout, depth0)
-    drange = [40, 60];  % 莫霍面深度范围
+    drange = [40, 60];  
     depthIndex = find(depth0 >= drange(1) & depth0 <= drange(2));
     nx = size(seisout, 2);
     dmoho = zeros(nx, 1);
@@ -128,7 +169,7 @@ function [dmoho, amoho] = extractMohoDepth(seisout, depth0)
         [peakVal, peakInd] = max(ampData);
 
         if peakVal < 1.0 * rmsVal
-            dmoho(i) = NaN;  % 峰值不明显，标记为 NaN
+            dmoho(i) = NaN; 
         else
             indMoho = depthIndex(peakInd);
             dmoho(i) = depth0(indMoho);
@@ -137,106 +178,53 @@ function [dmoho, amoho] = extractMohoDepth(seisout, depth0)
     end
 end
 
-%% 子函数：剔除离群值并插值
 function [Fmoho, idx] = interpolateMohoDepth(stlas, stlos, dmoho)
-    % 剔除离群值
     mu = mean(dmoho, 'omitnan');
     sig = std(dmoho, 'omitnan');
     idx = (dmoho >= mu - 3 * sig) & (dmoho <= mu + 3 * sig);
 
-    % 散点插值
     Fmoho = scatteredInterpolant(stlos(idx), stlas(idx), dmoho(idx), 'natural', 'none');
 end
 
-%% 子函数：绘制莫霍面深度图
-function plotMohoMap(stlas, stlos, dmoho, Fmoho)
-    % plotMohoMap 使用 MATLAB Mapping Toolbox 绘制 Moho 深度等值线图
-    % stlas, stlos: 台站（或观测点）的纬度和经度
-    % dmoho: 原始传入的 Moho 深度向量（如果用不到可以忽略）
-    % Fmoho: Moho 深度插值函数，比如 TriScatteredInterp 或者 scatteredInterpolant
+function plotMohoMap(arraytype,stlas, stlos, dmoho, Fmoho)
 
-    figure('Name', 'Moho depth map', 'Color', 'w', 'Position',[10 10 800 400]);
-
-    % 1. 计算绘图范围
     latlim = [min(stlas), max(stlas)];
     lonlim = [min(stlos), max(stlos)];
-
-    % 2. 构建规则网格，用于绘制等值线
-    [lonGrid, latGrid] = meshgrid(lonlim(1):0.05:lonlim(2), ...
-                                  latlim(1):0.05:latlim(2));
-    % 从插值函数获得此网格上的 Moho 值
+    [lonGrid, latGrid] = meshgrid(lonlim(1):0.05:lonlim(2), latlim(1):0.05:latlim(2));
     VI = Fmoho(lonGrid, latGrid);
 
-    % 3. 设置地图投影，并指定经纬度范围
-    %    axesm 中常见 'MapProjection' 选项有 'lambertstd', 'lambert', 'lambertconic'
-    %    也可以考虑用 worldmap(latlim, lonlim) 来简化。
-    ax = worldmap(latlim, lonlim);
-%     ax = axesm('lambertstd', ...
-%                'MapLatLimit', latlim, ...
-%                'MapLonLimit', lonlim, ...
-%                'FLineWidth', 2, ...    % 地图框线宽
-%                'FontSize', 12);       % 地图文字大小
-    hold on;
-
-    % 4. 绘制等值线 (contourfm/contourm)
-    %    注意 contourfm 的输入顺序是 (lat, lon, Z)。因为 meshgrid 我们先生成 (lonGrid, latGrid)，
-    %    所以这里要用 contourfm(latGrid, lonGrid, VI)。
-    contourfm(latGrid, lonGrid, VI, 15);  % 绘制 10 条等值线
-    % 调整色表：先用 jet，再 flipud 翻转
-    colormap(flipud(jet));
-    colorbar('Location', 'eastoutside', 'FontSize', 12);
-
-    % 5. 在地图上绘制测点散点
-    plotm(stlas, stlos, 'k^', 'MarkerSize', 6, 'LineWidth', 1);
-
-    % 6. 绘制海岸线/行政区线
-    %    这里举例用 landareas.shp。你可以用其它矢量数据替代。
-    %    如果你有 gshhs_i.shp，也可以改为 geoshow('gshhs_i.shp', 'Color','k')
-    try
-        geoshow('landareas.shp', 'FaceColor', 'none', 'EdgeColor', 'k', 'LineWidth', 1);
-    catch
-        % 如果没有 landareas.shp 文件，可以用内置 coast.mat 的数据:
-        % load coast
-        % plotm(lat, long, 'k', 'LineWidth',1);
-        warning('找不到 landareas.shp，使用内置海岸线数据替代。');
-        load coast
-        plotm(lat, long, 'k', 'LineWidth',1);
-    end
-
-    % 7. 打开经纬度网格
-    setm(ax, 'FontSize', 14, ...
-             'Grid', 'on', ...         % 显示网格
-             'Frame', 'on', ...        % 显示地图边框
-             'MeridianLabel', 'on', ...% 标注经度
-             'ParallelLabel', 'on', ...% 标注纬度
-             'MLineLocation', 0.5, ...   % 经度网格线间隔
-             'PLineLocation', 0.5);      % 纬度网格线间隔
-
-    mlabel('on');  % 打开经度标注
-    plabel('on');  % 打开纬度标注    
-    gridm('GLineStyle', '--', 'GColor', 'k', 'GLineWidth', 0.5);  % 设置网格线样式
-
-    title('Moho depth', 'FontSize', 16);
-
-    % 8. 绘制 Baiyan Ebo 矿区矩形
+    figure('Name', 'Moho depth map', 'Color', 'w', 'Position',[10 10 800 400]);
+    contourfm(latGrid, lonGrid, VI, 15);
+    box on;colormap(flipud(turbo));
+    title('Moho depth')
+    xlabel('Longitude (deg)');ylabel('Latitude (deg)');
+    set(gca,'FontSize', 18,'BoxStyle','full','LineWidth',1.5);
+    hold on
+    plot( stlos,stlas, 'k^', 'MarkerSize', 6, 'LineWidth', 1);
+    axis tight;
+    colorbar
     latB = [41.65, 41.65, 41.8833, 41.8833, 41.65];
     lonB = [109.7833, 110.0667, 110.0667, 109.7833, 109.7833];
-    plotm(latB, lonB, 'b', 'LineWidth', 1);
-
-    % 9. 读取并绘制断层
-    fault_files = dir('./visualization/faults/*txt');
-    for k = 1:length(fault_files)
-        faults = read_faults_gmt(fullfile(fault_files(k).folder, fault_files(k).name));
-        for l = 1:length(faults)
-            fault = faults{l};
-            % fault(:,1) -> lon, fault(:,2) -> lat
-            geoshow(fault(:,2), fault(:,1),'DisplayType','line','LineWidth',2,'Color','k');
+    plot(lonB, latB,'k', 'LineWidth', 0.8,'linestyle','--')
+    
+    if arraytype == 'BY'
+        fault_files = dir('./visualization/faults/*txt');
+        for k = 1:length(fault_files)
+            faults = read_faults_gmt(fullfile(fault_files(k).folder, fault_files(k).name));
+            for l = 1:length(faults)
+                fault = faults{l};
+                % fault(:,1) -> lon, fault(:,2) -> lat
+                geoshow(fault(:,2), fault(:,1),'DisplayType','line','LineWidth',2,'Color','k');
+            end
         end
+        axis([lonlim,latlim,])
+    else
+
     end
+    hold off;
 
 end
 
-%% 子函数：创建莫霍面结构体
 function mohoStruct = createMohoStruct(stlas, stlos, dmoho, amoho)
     mohoStruct.lat = stlas;
     mohoStruct.lon = stlos;
