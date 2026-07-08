@@ -19,7 +19,7 @@ function plotCommonEventGather(DataStruct, EventID, axis_type, plot_type, UIAxes
 %   plotSingleEventRFs(DataStruct, 'EV12345678', 'distance', UIAxes);
 %   plotSingleEventRFs(DataStruct, [], 'trace'); % Plot all events
 
-    %% 1) 输入检查
+    %% 1) check input
     if nargin < 3
         warning('plotSingleEventRFs requires at least 3 inputs: DataStruct, eventID, plot_type. Use trace index as default.');
         axis_type = 'trace';
@@ -40,16 +40,16 @@ function plotCommonEventGather(DataStruct, EventID, axis_type, plot_type, UIAxes
         nsta = nsta+3;
     end
 
-    %% 2) 收集满足条件的 RF 波形
+    %% 2) 
     rfmatrix = zeros(length(DataStruct(1).RF.itr),nsta);
     distArr  = [];
     foundIndices = [];
 
     if strcmp(EventID, 'all')
-        % 如果 EventID 是 'all'，则收集所有波形
+        % 
         foundIndices = 1:numel(DataStruct);
     else
-        % 否则，收集匹配指定 EventID 的波形
+        % 
         isMatch = arrayfun(@(x) strcmp(x.EventInfo.evid, EventID), DataStruct);
         foundIndices = find(isMatch);
     end
@@ -90,8 +90,8 @@ function plotCommonEventGather(DataStruct, EventID, axis_type, plot_type, UIAxes
     end
 
 
-    %% 3) 确定时间轴
-    %   从第一个有 RF.ittime 的记录中获取
+    %% 3) time axis
+    %   
     firstIdx = foundIndices(1);
     if isfield(DataStruct(firstIdx), 'RF') && isfield(DataStruct(firstIdx).RF,'ittime') ...
             && ~isempty(DataStruct(firstIdx).RF.ittime)
@@ -101,18 +101,18 @@ function plotCommonEventGather(DataStruct, EventID, axis_type, plot_type, UIAxes
         return;
     end
    
-    %% 4) 作图
+    %% 4) plot
     if nargin < 5 || isempty(UIAxes)
-        % 如果没有提供 UIAxes，则新建一个 figure
+        % 
         figure('Name',sprintf('RF for %s',EventID),'Color','white',...
                'Position',[10 10 900 350]);
         ax = gca;
     else
-        % 如果提供了 UIAxes，则在该 Axes 中画图
+        % 
         ax = UIAxes;
-        axes(ax); % 显式设置当前 Axes
-        cla(ax);  % 清空现有内容
-        hold(ax, 'on'); % 确保后续绘图在同一 Axes
+        axes(ax); 
+        cla(ax);  
+        hold(ax, 'on'); 
     end
 
     switch axis_type

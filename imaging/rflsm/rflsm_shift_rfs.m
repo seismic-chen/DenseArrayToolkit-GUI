@@ -34,9 +34,9 @@ save_wavefield=1;
 
 [nz,nx] = size(vel);
 img=zeros(nz,nx);
-tic;
+
 [~,mod_source,~] = kvssmfor_rf(img,vel,vel_s,pos,fpeak,tshift-ph,nt,dt,dx,dz,flow,fhigh,bc,'P',src,save_wavefield);
-toc;
+
 %% apply time shift to RF to obtain receiver side wavefield
 % cross correlate P wave with RF
 Z=squeeze(mod_source(1,:,:));

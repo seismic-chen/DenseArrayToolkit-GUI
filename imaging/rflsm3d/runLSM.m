@@ -85,11 +85,9 @@ function [lsmig,pre_rf] = runLSM(rfshift,take_off,back_az,src_func,save_wavefiel
     A = @(u) PtLt(LP(u)) + mu * u;
     b = PtLt(din);
 
-    tic;
     disp('PCG begins...')
     [utmp1,flag,relres,iter,resvec] = pcg(A,b,[],itermax);
     disp(['flag:',num2str(flag),', min value:',num2str(min(resvec))])
-    toc;
 
     mtmp1 = P(utmp1(:));
     lsmig = reshape(mtmp1,nz,nx,ny);

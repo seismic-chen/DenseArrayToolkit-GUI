@@ -61,9 +61,9 @@ PtLt= @(d) Pt(Lt(d));
 
 A = @(u) PtLt(LP(u))+mu*u;
 b = PtLt(d(:));
-tic;
+
 [utmp,flag,relres,iter,resvec] = pcg(A,b,[],itermax);
-toc;
+
 utmp=reshape(utmp,nz,nx);
 mtmp=P(utmp);
 dp = L(mtmp(:));

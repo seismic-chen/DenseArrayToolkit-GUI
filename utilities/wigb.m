@@ -70,8 +70,9 @@ set(gca,'NextPlot','add','Box','on', ...
 
 
 
-fillcolor = [1.0 0.0 0.0];
+fillcolor = [1 0.0 0.0];
 linecolor = [0.3 0.3 0.3];
+
 linewidth = 0.8;
 
 z=z'; 	% input as row vector
@@ -110,7 +111,7 @@ for i=1:nx,
         zzz = zstart + zz*dz -dz;
         % YC, plot in red if it is reconstructed traces
         if ismember(i,indices)
-            patch( aa+x(i) , zzz,  [1 0 0]);
+            patch( aa+x(i) , zzz,  [0 0 1]);
         else
             patch( aa+x(i) , zzz,  fillcolor);
         end

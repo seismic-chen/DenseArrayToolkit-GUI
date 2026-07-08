@@ -1,0 +1,2 @@
+Sta     Nrfs    Lat     Lon     Ele     H       Hstd    k       kstd    Hb_mean Hb_std  kb_mean kb_std 
+BY008   30      42.33   110.76  -12345.00 64.80   12.81   1.92    0.11    63.48   4.18    1.89    0.09   

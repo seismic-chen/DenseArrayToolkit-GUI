@@ -1,15 +1,15 @@
 function [seisout, depth0, mohoStruct] = stackCommonStationGather(DataStruct)
-    % stackCommonStationGather - 叠加台站接收函数，提取莫霍面深度并绘制结果
+    % stackCommonStationGather 
     %
-    % 输入:
-    %   DataStruct - 包含台站和事件数据的结构体
+    % Input:
+    %   DataStruct - 
     %
-    % 输出:
-    %   seisout    - 叠加后的接收函数剖面 [nz x nsta]
-    %   depth0     - 深度轴 [nz x 1]
-    %   mohoStruct - 包含莫霍面深度信息的结构体
+    % output:
+    %   seisout    - stacked profile [nz x nsta]
+    %   depth0     - depth axis [nz x 1]
+    %   mohoStruct - moho depth
 
-    % 1) 获取台站列表
+    % 1) station info
     load('./visualization/colormap/roma.mat')
     station = getStations(DataStruct); 
     stationList = {station.sta};
@@ -20,107 +20,108 @@ function [seisout, depth0, mohoStruct] = stackCommonStationGather(DataStruct)
         load('./visualization/SichuanLongmenshan.mat');
     elseif strcmp(arraytype , 'BY') == 1
         load('./visualization/Baiyanebo_DEM.mat');
+    elseif strcmp(arraytype , '30')==1
+        load('./visualization/Qilian_DEM.mat');
     end
 
-    F = scatteredInterpolant(demLon(:), demLat(:), demZ(:), 'nearest');
-    staelev = F(stlo, stla)/1000;
+    F = scatteredInterpolant(demLon(:), demLat(:), demZ(:), 'natural');
+    staelev = F(stlo, stla)./1000;
+    % staelev = interp2(demLon, demLat, demZ, stlo, stla,'makima') / 1000.;
 
-    % 2) 预分配数组
+    % 2) initial
     [seisCell, pArr, stlas, stlos] = initializeArrays(nsta);
     
-    % 3) 加载速度模型
+    % 3) velocity model
     [z, ~, vp, vs] = loadVelocityModel();
-    zmax = 100; dz = 0.5;  % 深度范围和采样间隔
+    zmax = 100; dz = 0.5;  % depth
 
-    % 4) 遍历台站，叠加波形
+    % 4) all stations
     for n = 1:nsta
         gather = getCommonStationGather(DataStruct, stationList{n});
         if isempty(gather)
-            continue;  % 跳过空数据
+            continue;  
         end
 
-        % 提取台站信息
+        % 
         stlas(n) = gather(1).StationInfo.stla;
         stlos(n) = gather(1).StationInfo.stlo;
 
-        % 叠加波形
+        % stacking
         [seisCell{n}, pArr(n)] = stackWaveforms(gather, dz, zmax, z, vp, vs);
     end
 
-    % 5) 转换为矩阵并平滑
+    % 5) to smooth
     ngrid_x = 8;
     ngrid_y = 4;
 %     seisout = smoothSeismicData(seisCell,ngrid_x,ngrid_y);
     seisout = cell2mat(seisCell);
-    % 6) 提取深度轴
-    depth0 = (0:dz:zmax)';  % 深度轴 [nz x 1]
+    % 6) depth axis
+    depth0 = (0:dz:zmax)';  
 
-    % 7) 提取莫霍面深度
+    % 7) 
     [dmoho, amoho] = extractMohoDepth(seisout, depth0);
 
-    % 8) 剔除离群值并插值
+    % 8) removing alis and interpolation
     [Fmoho, idx] = interpolateMohoDepth(stlas, stlos, dmoho);
 
-    % 9) 绘制莫霍面深度图
+    % 9) moho depth
     plotMohoMap(arraytype,stlas, stlos, dmoho, Fmoho);
 
-    % 10) 绘制叠加剖面
+    % 10) ploting moho depth
     plotStackedSection(arraytype,seisout, depth0, dmoho, staelev,roma);
 
-    % 11) 输出结果
+    % 11) output
     mohoStruct = createMohoStruct(stlas, stlos, dmoho, amoho);
 end
 
-%% 子函数：初始化数组
+%% subfunction
 function [seisCell, pArr, stlas, stlos] = initializeArrays(nsta)
-    seisCell = cell(1, nsta);  % 存储叠加后的接收函数
-    pArr = zeros(nsta, 1);     % 存储平均射线参数
-    stlas = zeros(nsta, 1);    % 台站纬度
-    stlos = zeros(nsta, 1);    % 台站经度
+    seisCell = cell(1, nsta);  
+    pArr = zeros(nsta, 1);     
+    stlas = zeros(nsta, 1);    
+    stlos = zeros(nsta, 1);    
 end
 
-%% 子函数：加载速度模型
+%% 
 function [z, r, vp, vs] = loadVelocityModel()
-    % 加载 AK135 速度模型
+   
     [z, r, vp, vs, ~, ~] = ak135('cont');
 end
 
-%% 子函数：叠加波形
+%% 
 function [seis, pArr] = stackWaveforms(gather, dz, zmax, z, vp, vs)
-    % 检查所有记录长度是否一致
+    % 
     rfsAll = cellfun(@(rf) rf.itr, {gather.RF}, 'UniformOutput', false);
     timeAll = cellfun(@(rf) rf.ittime, {gather.RF}, 'UniformOutput', false);
 
-    % 提取射线参数
+
     raypAll = cellfun(@(travelinfo) travelinfo.rayParam / 6371, {gather.TravelInfo}, 'UniformOutput', false);
     raypAll = cell2mat(raypAll);
 
-    % 时间-深度转换
+    % time to depth
     [~, rfsAll_depth, ~] = rf_migrate(timeAll, rfsAll, raypAll, dz, zmax, z, vp, vs);
 
-    % 叠加波形
+    % stacking
     seis = mean(cell2mat(rfsAll_depth), 2, 'omitnan');
     pArr = mean(raypAll, 'omitnan');
 end
 
-%% 子函数：平滑地震数据
+%% smoothing
 function seisout = smoothSeismicData(seisCell,ngrid_x,ngrid_y)
-    % 将 cell 转换为矩阵
+   
     seisout = cell2mat(seisCell);
 
-    % 平滑处理
     kernel = ones(ngrid_x, ngrid_y) / (ngrid_x * ngrid_y);
     seisout = conv2(seisout, kernel, 'same');
 end
 
-%% 子函数：绘制叠加剖面
+%% plotting
 function plotStackedSection(arraytype,seisout, depth0, dmoho, staelev,roma)
     if arraytype == 'SL'
         seisout = fliplr(seisout);
         dmoho = fliplr(dmoho');
         staelev = fliplr(staelev);
 
-        
     elseif arraytype == 'BY'
 
     else
@@ -193,7 +194,7 @@ function plotMohoMap(arraytype,stlas, stlos, dmoho, Fmoho)
     [lonGrid, latGrid] = meshgrid(lonlim(1):0.05:lonlim(2), latlim(1):0.05:latlim(2));
     VI = Fmoho(lonGrid, latGrid);
 
-    figure('Name', 'Moho depth map', 'Color', 'w', 'Position',[10 10 800 400]);
+    figure('Name', 'Moho depth map', 'Color', 'w');
     contourfm(latGrid, lonGrid, VI, 15);
     box on;colormap(flipud(turbo));
     title('Moho depth')
@@ -201,13 +202,14 @@ function plotMohoMap(arraytype,stlas, stlos, dmoho, Fmoho)
     set(gca,'FontSize', 18,'BoxStyle','full','LineWidth',1.5);
     hold on
     plot( stlos,stlas, 'k^', 'MarkerSize', 6, 'LineWidth', 1);
-    axis tight;
+    axis equal;
     colorbar
-    latB = [41.65, 41.65, 41.8833, 41.8833, 41.65];
-    lonB = [109.7833, 110.0667, 110.0667, 109.7833, 109.7833];
-    plot(lonB, latB,'k', 'LineWidth', 0.8,'linestyle','--')
-    
+
     if arraytype == 'BY'
+        latB = [41.65, 41.65, 41.8833, 41.8833, 41.65];
+        lonB = [109.7833, 110.0667, 110.0667, 109.7833, 109.7833];
+        plot(lonB, latB,'k', 'LineWidth', 0.8,'linestyle','--')
+
         fault_files = dir('./visualization/faults/*txt');
         for k = 1:length(fault_files)
             faults = read_faults_gmt(fullfile(fault_files(k).folder, fault_files(k).name));

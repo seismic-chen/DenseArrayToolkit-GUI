@@ -53,7 +53,7 @@ stationList = getStations(gather);
 stlo = [stationList.stlo]';  
 stla = [stationList.stla]';
 
-% 每个地震台站在投影坐标系中的笛卡尔坐标
+% car
 [rx, ry] = latlonToProjectedCoords(stlo, stla, gridStruct);
 
 %% 3. Collect RF data into matrix d0

@@ -34,10 +34,8 @@ flow = param.flow;
 fhigh = param.fhigh;
 save_wavefield=0;
 
-tic;
 [mig] = kvssmadj_rf(d,vel,vel_s,pos,[], ...
     tshift-ph,nt,dt,dx,dz,flow,fhigh,bc,'P',src,save_wavefield);
-toc;
 
 [dp,~,~] = kvssmfor_rf(mig,vel,vel_s,pos,[], ...
     tshift-ph,nt,dt,dx,dz,flow,fhigh,bc,'P',src,save_wavefield);

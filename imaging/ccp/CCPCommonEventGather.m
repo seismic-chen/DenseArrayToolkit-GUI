@@ -80,9 +80,8 @@ lonAll = cell2mat(lonAll);
 % Perform ray tracing for CCP points
 model_type = 'flat';
 disp('Ray tracing started');
-tic;
 [cp, ~ ,MidPoints] = rf_ccp(raypAll, bazAll, gridStruct.dz, zmax, z, vp, vs, latAll, lonAll, model_type);
-toc;
+
 disp('Ray tracing completed');
 
 % make time correction if a regional 3D velocity model is available
@@ -105,11 +104,8 @@ end
 % This converts the time-based RF measurements to depth coordinates
 % matching the imaging grid
 disp('Time-to-depth conversion started');
-tic;
 [~, rfsAll_depth, ~] = rf_migrate(timeAll, rfsAll, raypAll, gridStruct.dz, zmax, z, vp, vs, TimeCorrections);
-toc;
 disp('Time-to-depth conversion completed');
-
 
 % Attach RF amplitudes to CCP points
 for k = 1:nrf

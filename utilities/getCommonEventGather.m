@@ -16,7 +16,7 @@ function [CommonEventGather,matchIndex] = getCommonEventGather(DataStruct, Event
 % Example:
 %   CommonGather = getCommonEventGather(DataStruct, 'EV12345');
 
-    %% 1. 输入参数验证
+    %% 1. 
     if nargin < 2
         error('getCommonEventGather:InsufficientInputs',...
             'Two input arguments required: DataStruct and EventID');

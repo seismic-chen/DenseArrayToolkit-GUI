@@ -121,7 +121,6 @@ for k=ilow:ihigh
 %         size(inter_op(Sn_1,par,1))
         Sn=Sn_1-s(iter)*inter_op(inter_op(Sn_1,par,-1)-S_obs,par,1);
         
-        
         M=P_H(Sn,lx,ly);
         M=P_RD(M,N,K);
         Sn=P_A(M,nx,ny,lx,ly);

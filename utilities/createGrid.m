@@ -8,91 +8,86 @@ elseif nargin == 5
     xpad = 3*dx;
     ypad = 3*dy;
 end
-% 从数据结构中提取台站信息
+% station info
 stationList = getStations(DataStruct);
-stlo = [stationList.stlo]';  % 台站经度
-stla = [stationList.stla]';  % 台站纬度
+stlo = [stationList.stlo]';  
+stla = [stationList.stla]';  
 originLon=min(stlo);
 originLat=min(stla);
-% 将经纬度转换为笛卡尔坐标（相对最小经纬度）
+% reference point
 [stationX, stationY] = latlon2xy(stlo, stla, originLon, originLat);
 
 if nargin < 2
-    % 计算所有相邻台站之间的欧几里得距离
+    % distance
     n = length(stationX);
-    distances = zeros(n-1, 1);  % 存储相邻台站之间的距离
+    distances = zeros(n-1, 1);  
     for i = 1:n-1
         distances(i) = sqrt((stationX(i) - stationX(i+1))^2 + (stationY(i) - stationY(i+1))^2);
     end
     %
-    % 计算相邻台站的平均距离
-    avgDistance = mean(distances);  % 计算相邻台站的平均距离
+    % averaged distance
+    avgDistance = mean(distances);
     dx = avgDistance;
     dy = avgDistance;
 end
 
-% 执行主成分分析（PCA）
+% PCA
 coords = [stationX(:), stationY(:)];
-[coeff, ~, ~] = pca(coords);  % coeff 包含主成分方向
+[coeff, ~, ~] = pca(coords);  % coeff 
 
-% ========== 新增部分：检查并调整主成分方向 ==========
-threshold = cosd(5); % 5度阈值
-v1 = coeff(:,1);     % 主方向
-v2 = coeff(:,2);     % 次方向
+% ========== ==========
+threshold = cosd(5); % threshold 5 degree
+v1 = coeff(:,1);     % major axis
+v2 = coeff(:,2);     % secondary axis
 
-% 计算主方向与东/北的相似度
+% 
 dot_east = v1(1);
 dot_north_v1 = v1(2);
 
-if abs(dot_east) > abs(dot_north_v1) % 更接近东/西方向
+if abs(dot_east) > abs(dot_north_v1) % 
     if abs(dot_east) >= threshold
-        % 调整主方向为东/西
+        % east/west
         new_v1 = sign(dot_east)*[1; 0];
         
-        % 调整次方向为北/南（根据次方向原始倾向）
+        % n/s
         new_v2 = sign(v2(2))*[0; 1];
         
-        % 构建调整后的坐标变换矩阵
+        % coe
         coeff_adjusted = [new_v1, new_v2];
         
-        % 确保右手坐标系
+        % right-hand
         if det(coeff_adjusted) < 0
             coeff_adjusted(:,2) = -coeff_adjusted(:,2);
         end
         coeff = coeff_adjusted;
     end
-else % 更接近北/南方向
+else 
     if abs(dot_north_v1) >= threshold
-        % 调整主方向为北/南
+
         new_v1 = sign(dot_north_v1)*[0; 1];
         
-        % 调整次方向为东/西（根据次方向原始倾向）
         new_v2 = sign(v2(1))*[1; 0];
         
-        % 构建调整后的坐标变换矩阵
         coeff_adjusted = [new_v1, new_v2];
         
-        % 确保右手坐标系
         if det(coeff_adjusted) < 0
             coeff_adjusted(:,2) = -coeff_adjusted(:,2);
         end
         coeff = coeff_adjusted;
     end
 end
-% ========== 修改结束 ==========
 
-% 主轴（最大方差方向）和次轴（最小方差方向）
-principal_axis = coeff(:,1);  % 主轴
-secondaryAxis = coeff(:,2);  % 次轴
+principal_axis = coeff(:,1);  % main
+secondaryAxis = coeff(:,2);  % secondary
 
-% 计算主成分和次成分的范围 
+
 projection_on_principal_axis = coords * principal_axis;
 projection_on_secondary_axis = coords * secondaryAxis;
 
-% 台站的投影位置
+% projected station
 rx = [projection_on_principal_axis,zeros(size(projection_on_principal_axis))];
 ry = [zeros(size(projection_on_secondary_axis)),projection_on_secondary_axis];
-% 台站投影位置在原始坐标系中的位置
+% in origional coordinate
 rxInOriginalCoord = rx * coeff'; 
 ryInOriginalCoord = ry * coeff'; 
 
@@ -100,7 +95,6 @@ ryInOriginalCoord = ry * coeff';
 %     idx = strcmp({stationList.sta},DataStruct.StationInfo.sta);
 %     DataStruct(n).StationInfo.rx = rx(1,)
 % end
-% 获取台阵的范围
 % xpad = 1*dx;
 % ypad = 1*dy;
 
@@ -109,18 +103,18 @@ x_max = round(max(projection_on_principal_axis)/dx)*dx+xpad;
 y_min = min(projection_on_secondary_axis)-ypad;
 y_max = round(max(projection_on_secondary_axis)/dy)*dy+ypad;
 
-% 创建网格
+% generate grid
 nx = floor((x_max - x_min) / dx) + 1;
 ny = floor((y_max - y_min) / dy) + 1;
 
-% 生成网格点的坐标
+% mesh
 x = linspace(x_min, x_max, nx);
 y = linspace(y_min, y_max, ny);
 [X, Y] = meshgrid(x, y);
 
-% 将网格点从主成分坐标系变换回原始坐标系
+% 
 gridPoints = [X(:), Y(:)];
-gridPointsInOriginalCoord = gridPoints * coeff';  % 逆变换
+gridPointsInOriginalCoord = gridPoints * coeff';  % inverse 
 XInOriginalCoord = reshape(gridPointsInOriginalCoord(:,1),size(X));
 YInOriginalCoord = reshape(gridPointsInOriginalCoord(:,2),size(Y));
 
@@ -161,17 +155,17 @@ secondaryAxisLatLon = [tmplon,tmplat];
 % XInOriginalCoord=XInOriginalCoord-xshift;
 % YInOriginalCoord=YInOriginalCoord-yshift;
 
-% 绘制图形
+%% plot
 figure;
 set(gcf,'Position',[0 0 700 700],'Color','w')
 hold on;
 
-% 绘制台站的位置
+% station
 scatter(stationX, stationY, 50,'r^', 'filled', 'DisplayName', 'Stations');
 scatter(rxInOriginalCoord(:,1),rxInOriginalCoord(:,2),'b^','DisplayName','Projected X location')
 scatter(ryInOriginalCoord(:,1),ryInOriginalCoord(:,2),'g^','DisplayName','Projected Y location')
 
-% 绘制主轴和次轴方向
+% 
 % quiver(mean(gridPointsInOriginalCoord(:,1)), mean(gridPointsInOriginalCoord(:,2)), (x_max-x_min)/2*principal_axis(1), (x_max-x_min)/2*principal_axis(2), ...
 %     'MaxHeadSize', 2, 'LineWidth', 2, 'Color', 'b', 'DisplayName', 'Principal Axis');
 % quiver(mean(gridPointsInOriginalCoord(:,1)), mean(gridPointsInOriginalCoord(:,2)), (y_max-y_min)/2*secondary_axis(1), (y_max-y_min)/2*secondary_axis(2), ...
@@ -179,10 +173,9 @@ scatter(ryInOriginalCoord(:,1),ryInOriginalCoord(:,2),'g^','DisplayName','Projec
 plot(principleAxisInOriginalCoord(:,1),principleAxisInOriginalCoord(:,2),'b','linewidth',1,'DisplayName', 'Principal Axis','LineStyle','--')
 plot(secondaryAxisInOriginalCoord(:,1),secondaryAxisInOriginalCoord(:,2),'g','linewidth',1,'DisplayName', 'Secondary Axis','LineStyle','--')
 
-% 绘制网格点的位置
+% 
 scatter(XInOriginalCoord(:), YInOriginalCoord(:), 50, 'k', 'filled', ...
     'DisplayName', 'Grid Points');
-% 设置图形
 xlabel('Easting (km)');ylabel('Northing (km)');
 legend('show','Location','best');
 axis equal;grid on;box on
@@ -195,7 +188,8 @@ nz = length(z);
 % calculate the area limit in lat,lon
 [LonMin,LatMin] = xy2latlon(min(XInOriginalCoord(:)),min(YInOriginalCoord(:)),originLon,originLat);
 [LonMax,LatMax] = xy2latlon(max(XInOriginalCoord(:)),max(YInOriginalCoord(:)),originLon,originLat);
-% 返回网格的参数
+
+%% output
 gridStruct = struct( ...
     'stationLon', stlo, ...
     'stationLat', stla, ...

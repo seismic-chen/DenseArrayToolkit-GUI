@@ -197,7 +197,7 @@ for n = 1:length(DataStruct)
     %   param.sig_leader = time before P (e.g. 30s)
     %   param.record_len = total window length after sig_leader
     startCut  = pTime - param.sig_leader;
-    finishCut = startCut + param.sig_leader + param.record_len;
+    finishCut = startCut + param.record_len;
     
     [seis_cut, t_cut] = chopSeis(seis_flt, t, startCut, finishCut);
     DataStruct(n).ProcHistory{end+1} = ...
@@ -257,7 +257,7 @@ if isempty(dt) || dt <= 0
 end
 
 % Define the time windows
-noiseStart = p_time - 105; 
+noiseStart = p_time - 25; 
 noiseEnd   = p_time -   5;
 sigStart   = p_time -   5;
 sigEnd     = p_time +   5;

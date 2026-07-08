@@ -1,7 +1,7 @@
 function param = setMigParam3D(gridStruct)
 
-    param.rx = gridStruct.rx;
-    param.ry = gridStruct.ry;
+    param.rx = gridStruct.rx(:,1);
+    param.ry = gridStruct.ry(:,2);
     
     param.dx = gridStruct.dx;
     param.dy = gridStruct.dy;
