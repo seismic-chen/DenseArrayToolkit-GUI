@@ -161,7 +161,7 @@ switch gridStruct.ModelType
         end
 
         % Generate CCP Image
-%         V = V ./ max(count, 1);  % 避免除以0
+%         V = V ./ max(count, 1);  % 
 
         %% Plot CCP Image
         try

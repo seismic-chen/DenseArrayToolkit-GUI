@@ -1,2 +1,11 @@
 Sta     Nrfs    Lat     Lon     Ele     H       Hstd    k       kstd    Hb_mean Hb_std  kb_mean kb_std 
 BY008   30      42.33   110.76  -12345.00 64.80   12.81   1.92    0.11    63.48   4.18    1.89    0.09   
+Sta     Nrfs    Lat     Lon     Ele     H       Hstd    k       kstd    Hb_mean Hb_std  kb_mean kb_std 
+Sta     Nrfs    Lat     Lon     Ele     H       Hstd    k       kstd    Hb_mean Hb_std  kb_mean kb_std 
+Sta     Nrfs    Lat     Lon     Ele     H       Hstd    k       kstd    Hb_mean Hb_std  kb_mean kb_std 
+Sta     Nrfs    Lat     Lon     Ele     H       Hstd    k       kstd    Hb_mean Hb_std  kb_mean kb_std 
+53012244 27      53.57   -112.80 -12345.00 52.00   1.72    1.60    0.14    51.42   1.03    1.63    0.09   
+Sta     Nrfs    Lat     Lon     Ele     H       Hstd    k       kstd    Hb_mean Hb_std  kb_mean kb_std 
+53013808 27      53.59   -112.28 -12345.00 50.30   1.84    1.60    0.16    50.29   0.20    1.60    0.00   
+Sta     Nrfs    Lat     Lon     Ele     H       Hstd    k       kstd    Hb_mean Hb_std  kb_mean kb_std 
+53013808 27      53.59   -112.28 -12345.00 37.80   3.13    1.76    0.05    37.71   0.17    1.76    0.01   

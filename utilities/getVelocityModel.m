@@ -51,9 +51,9 @@ for i = 1:length(latall)
         lon = lonall(j);
         % note that                 m0 starts at 0 km depth. The elevation infomration is
         % missing, to include topography set if_topo to 1
-        % if_topo = 1;
-        % [m0,~] = obtain_crust1_v2(lat,lon,[],if_topo);
-        m0 = obtain_ustc_litho(lat,lon);
+        if_topo = 0;
+        [m0,~] = obtain_crust1_v2(lat,lon,[],if_topo);
+        % m0 = obtain_ustc_litho(lat,lon);
         % define the interface in the crust 1.0 model
         m_interface = [];
         for l = 1:size(m0,1)

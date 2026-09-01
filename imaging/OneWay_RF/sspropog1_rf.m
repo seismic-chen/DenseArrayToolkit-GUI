@@ -30,7 +30,7 @@ function [wavf,wavf_full] = sspropog1_rf(in,vavg,du,nx,dx,nz,dz,w,iflag,bc,wavf_
 
 we = ones(1,nx);
 if bc==1;
-    Lx=20;
+    Lx=10;
     ix = 1:1:Lx;
     tap1 = exp(-(0.015*(Lx-ix)).^2);
     we = [tap1,ones(1,nx-2*Lx),fliplr(tap1)];

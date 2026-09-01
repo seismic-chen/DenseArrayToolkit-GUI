@@ -163,5 +163,4 @@ if abs(hdrZ.station.stla - hdrN.station.stla) > 1e-5 || ...
         hdrZ.station.stla, hdrN.station.stla, hdrE.station.stla);
 end
 
-% You can add more comparisons as needed (e.g., station.stlo, sampling rates, etc.)
 end

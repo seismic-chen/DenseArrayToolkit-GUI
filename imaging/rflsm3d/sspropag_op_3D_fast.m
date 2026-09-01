@@ -1,6 +1,4 @@
 function [wavf,wavf_full] = sspropag_op_3D_fast(in,vavg,du,nx,dx,nz,dz,ny,dy,w,iflag,bc,wavf_type,save_wavefield)
-% ssf 主要程序（矢量化优化版）
-% 包含震源波场和检波点波场计算
 % 2023.3.30
 
 % phase shift wave propogator with split-step correction for 1 frequency
@@ -25,7 +23,7 @@ function [wavf,wavf_full] = sspropag_op_3D_fast(in,vavg,du,nx,dx,nz,dz,ny,dy,w,i
 %         wavf -- propogated wavefield at a given frequency
 %                with split step corrections
 %      wav_full -- 
-%% 边界条件 
+%% boundary condition 
 if bc == 1
     if nx == 1
         Lx = 0;

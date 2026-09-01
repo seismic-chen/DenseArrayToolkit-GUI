@@ -17,7 +17,7 @@ function plotStations(DataStruct, demFile, external_station_file)
 
 %% 1. Load DEM data
 if nargin < 2 || isempty(demFile)
-    demFile = 'Qaidam_DEM.mat';  % 
+    demFile = 'dem_data.mat';  % 
     
 end
 if nargin < 3
@@ -84,8 +84,6 @@ end
 
 %% 7.
 title('Station Map with DEM', 'FontSize',12,'FontWeight','bold');
-
-% gridm, framem, etc. 
 gridm('on');    framem('on');   mlabel on;  plabel on; 
 
 %% 8. 
@@ -98,7 +96,6 @@ for k = 1:length(fault_files)
         geoshow(fault(:,2), fault(:,1),'DisplayType','line','LineWidth',2,'Color','k');
     end
 end
-
 
 if ~isempty(external_station_file)
     fid = fopen(external_station_file, 'r');

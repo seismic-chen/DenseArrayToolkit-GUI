@@ -13,15 +13,33 @@ function [seisout, depth0, mohoStruct] = stackCommonStationGather(DataStruct)
     load('./visualization/colormap/roma.mat')
     station = getStations(DataStruct); 
     stationList = {station.sta};
-    stla = [station.stla]; stlo = [station.stlo];
+    stla = [station.stla]; 
+    stlo = [station.stlo];
+
     nsta = length(stationList);
     arraytype = station(1).network;
+
+    if ~exist("./visualization/dem_data.mat","file")
+        h = waitbar(0, 'Downloading DEM data...');
+        extract_dem(stlo, stla);
+        waitbar(1, h, 'Download complete!');
+        pause(0.5);
+        close(h);
+    end
+
     if strcmp(arraytype , 'SL')==1
         load('./visualization/SichuanLongmenshan.mat');
     elseif strcmp(arraytype , 'BY') == 1
         load('./visualization/Baiyanebo_DEM.mat');
     elseif strcmp(arraytype , '30')==1
         load('./visualization/Qilian_DEM.mat');
+    else
+        load('./visualization/dem_data.mat');
+
+        factor = 5; 
+        demZ = double(demZ(1:factor:end, 1:factor:end));
+        demLat = demLat(1:factor:end,1:factor:end);
+        demLon = demLon(1:factor:end,1:factor:end);
     end
 
     F = scatteredInterpolant(demLon(:), demLat(:), demZ(:), 'natural');
@@ -51,8 +69,6 @@ function [seisout, depth0, mohoStruct] = stackCommonStationGather(DataStruct)
     end
 
     % 5) to smooth
-    ngrid_x = 8;
-    ngrid_y = 4;
 %     seisout = smoothSeismicData(seisCell,ngrid_x,ngrid_y);
     seisout = cell2mat(seisCell);
     % 6) depth axis
@@ -134,7 +150,7 @@ function plotStackedSection(arraytype,seisout, depth0, dmoho, staelev,roma)
     colormap(flipud(roma)); clim([-0.05 0.05]);
     plot(1:size(seisout, 2), dmoho, 'r--', 'LineWidth', 0.8); hold off;
     ylim([0 100]);xlim([0 size(seisout, 2)])
-    ylabel('Depth (km)');xlabel('# of station')
+    ylabel('Depth (km)');xlabel('Station index')
     set(axRF, 'FontSize', 18,'LineWidth',1.5)
     title(axRF, 'Stacked RFs');
 
@@ -149,7 +165,7 @@ function plotStackedSection(arraytype,seisout, depth0, dmoho, staelev,roma)
 
     axElev = axes('Parent',f1,'Position', [rf_pos(1) yTop rf_pos(3) hTop]);
     plot(1:size(seisout, 2), staelev, 'b-', 'LineWidth', 2);
-    xlim([0 size(seisout, 2)]);ylim([0 5])
+    xlim([0 size(seisout, 2)]);ylim([min(staelev(:))*0.9 max(staelev(:))*1.1])
     grid on; box on;
     xlabel('Station index'); ylabel('Elev. (km)');
     axElev.XTickLabel = [];   axElev.XLabel.String = '';

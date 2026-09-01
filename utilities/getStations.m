@@ -1,11 +1,11 @@
 function stationList = getStations(DataStruct)
 
 station = struct( ...
-        'sta',   [], ...  % 波形数据: Nt x Nch 或 cell 数组
-        'stla',    [], ...  % 绝对时间、采样率等
-        'stlo', [], ...  % 台站信息
-        'stel',   [], ...  % 震源信息
-        'network', [] ... % 文件路径/头信息
+        'sta',   [], ...  % Nt x Nch 
+        'stla',    [], ...  
+        'stlo', [], ...  
+        'stel',   [], ...  
+        'network', [] ... 
         );
 
 

@@ -41,7 +41,8 @@ function plotCommonEventGather(DataStruct, EventID, axis_type, plot_type, UIAxes
     end
 
     %% 2) 
-    rfmatrix = zeros(length(DataStruct(1).RF.itr),nsta);
+    % rfmatrix = zeros(length(DataStruct(1).RF.itr),nsta);
+    rfmatrix = [];
     distArr  = [];
     foundIndices = [];
 
@@ -63,10 +64,13 @@ function plotCommonEventGather(DataStruct, EventID, axis_type, plot_type, UIAxes
         if isfield(DataStruct(idx), 'RF') && isfield(DataStruct(idx).RF,'itr') ...
                 && ~isempty(DataStruct(idx).RF.itr)
                       % [Nt x 1] -> add as new column
-            stanm = DataStruct(idx).StationInfo.sta;
-            tmp = str2double(strsplit(stanm,stanm(1:2)));
-            stanum = tmp(2);
-            rfmatrix(:, stanum) = DataStruct(idx).RF.itr;
+            
+            % stanm = DataStruct(idx).StationInfo.sta;
+            % tmp = str2double(strsplit(stanm,stanm(1:2)));
+            % stanum = tmp(2);
+            % rfmatrix(:, stanum) = DataStruct(idx).RF.itr;
+
+            rfmatrix(:, end+1) = DataStruct(idx).RF.itr;
 
         else
             continue;
@@ -121,7 +125,7 @@ function plotCommonEventGather(DataStruct, EventID, axis_type, plot_type, UIAxes
             xlabelstr = 'Distance (deg)';
         case 'trace'
             xrange = 1:nsta;
-            xlabelstr = '# of station';  
+            xlabelstr = 'Station index';  
     end
     switch plot_type
         case 'wigb'

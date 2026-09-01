@@ -11,28 +11,25 @@
 % required by the HK program
 % Dec. 19, 2016, using vp and vs if zero is not always good criterion to 
 % count the number of sediments, I should also consider the layer thickness
-% Jan. 25, 2017, add flag to control if include surface topography 
-function varargout = obtain_crust1(varargin)
+% Jan. 25, 2017, add flag to control if include surface topography
+function varargout = obtain_crust1_v2(varargin)
 lat = varargin{1};
 lon = varargin{2};
+H = varargin{3};
+if_topo = varargin{4};
 if nargin < 3
     H = 0;
-else
-    H = varargin{3};
 end
-
 if nargin < 4
     if_topo = 0;
-else
-    if_topo = varargin{4};
 end
-
 % lat = 54.5;
 % lon = -115.5;
 nla=180;
 nlo=360;
 nd=9;
-mdldir='./velocity_model/crust1.0/';
+
+mdldir=fullfile('./velocity_model/crust1.0/');
 vp=load([mdldir,'crust1.vp']);
 vs=load([mdldir,'crust1.vs']);
 rho=load([mdldir,'crust1.rho']);
